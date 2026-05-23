@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AsesoresYa — Panel Asesor</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0f0a;--surface:#121a10;--surface2:#192117;--surface3:#1f2a1c;
+  --border:rgba(255,255,255,0.07);
+  --accent:#3de0a0;--accent2:#f0c040;--danger:#ff5c5c;--info:#5cb8ff;
+  --text:#edf2eb;--muted:#607a5a;
+  --sidebar:260px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0;position:relative;overflow:hidden}
+.login-wrap::before{content:'ASESOR';position:absolute;font-family:'Bebas Neue',sans-serif;font-size:28vw;color:rgba(61,224,160,.025);letter-spacing:8px;pointer-events:none;user-select:none;white-space:nowrap}
+.login-card{background:var(--surface);border:1px solid rgba(61,224,160,.15);border-radius:24px;padding:48px;width:100%;max-width:420px;position:relative;z-index:1;animation:up .4s cubic-bezier(.16,1,.3,1)}
+@keyframes up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.l-logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--accent);margin-bottom:4px}
+.l-logo span{color:var(--text)}
+.l-badge{font-size:10px;font-family:'DM Mono',monospace;color:var(--accent);letter-spacing:2px;background:rgba(61,224,160,.1);border:1px solid rgba(61,224,160,.2);padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:28px}
+.l-card h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;margin-bottom:6px}
+.l-card p{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+
+/* FORM */
+.field{margin-bottom:16px}
+label{display:block;font-size:11px;font-weight:500;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+input[type="text"],input[type="email"],input[type="password"],input[type="tel"],input[type="date"],input[type="time"],textarea,select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:13px 16px;outline:none;transition:border-color .2s;resize:none;appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+select option{background:var(--surface2)}
+.btn-green{width:100%;background:var(--accent);color:#0b0f0a;font-weight:700;font-size:15px;padding:15px;border-radius:14px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;margin-top:4px}
+.btn-green:hover{box-shadow:0 10px 28px rgba(61,224,160,.35);transform:translateY(-1px)}
+.login-err{background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.3);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--danger);margin-bottom:16px;display:none}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sb-logo{padding:26px 22px 18px;border-bottom:1px solid var(--border)}
+.sb-logo-text{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent)}
+.sb-logo-text span{color:var(--text)}
+.sb-logo-sub{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-top:2px}
+.sb-user{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.sb-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#20a070);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#0b0f0a;flex-shrink:0}
+.sb-name{font-weight:600;font-size:14px;line-height:1.3}
+.sb-rol{font-size:11px;color:var(--muted)}
+.sb-online{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--accent);font-family:'DM Mono',monospace;margin-top:3px}
+.sb-online::before{content:'●';font-size:7px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.nav-sec{padding:14px 14px 4px;font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-family:'DM Mono',monospace}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;margin:2px 8px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:500;color:var(--muted);transition:all .2s;border:none;background:transparent;width:calc(100% - 16px);text-align:left;font-family:'DM Sans',sans-serif}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(61,224,160,.1);color:var(--accent);font-weight:600}
+.nav-item .ico{font-size:17px;width:22px;text-align:center}
+.nav-item .badge{margin-left:auto;background:var(--danger);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px}
+.sb-footer{margin-top:auto;padding:14px 10px;border-top:1px solid var(--border)}
+
+/* MAIN */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{padding:18px 34px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(11,15,10,.9);backdrop-filter:blur(20px);position:sticky;top:0;z-index:40}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px}
+.content{padding:30px 34px;flex:1}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px}
+.card-sm{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:18px}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;transition:all .2s;position:relative;overflow:hidden}
+.sc:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.1)}
+.sc-icon{font-size:20px;margin-bottom:10px;display:block}
+.sc-val{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;line-height:1}
+.g{color:var(--accent)}
+.y{color:var(--accent2)}
+.b{color:var(--info)}
+.r{color:var(--danger)}
+.sc-lbl{font-size:11px;color:var(--muted);margin-top:5px}
+.sc-delta{font-size:10px;margin-top:3px;font-family:'DM Mono',monospace;color:var(--accent)}
+
+/* STATUS */
+.status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:.5px;font-family:'DM Mono',monospace}
+.status::before{content:'●';font-size:7px}
+.s-ok{background:rgba(61,224,160,.12);color:var(--accent);border:1px solid rgba(61,224,160,.25)}
+.s-pend{background:rgba(240,192,64,.12);color:var(--accent2);border:1px solid rgba(240,192,64,.25)}
+.s-done{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}
+.s-bad{background:rgba(255,92,92,.12);color:var(--danger);border:1px solid rgba(255,92,92,.25)}
+
+/* SOLICITUD CARD */
+.sol-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:10px;transition:all .2s;cursor:pointer}
+.sol-card:hover{border-color:rgba(61,224,160,.3)}
+.sol-card.nueva{border-color:rgba(61,224,160,.4);background:rgba(61,224,160,.04)}
+.sol-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.sol-name{font-weight:700;font-size:15px;margin-bottom:2px}
+.sol-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.sol-dot{width:3px;height:3px;border-radius:50%;background:var(--muted);align-self:center}
+.sol-obj{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px}
+.sol-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* BUTTONS */
+.btn-xs{font-size:12px;padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-xs:hover{border-color:var(--accent);color:var(--accent)}
+.btn-xs.g{border-color:rgba(61,224,160,.4);color:var(--accent)}
+.btn-xs.g:hover{background:rgba(61,224,160,.1)}
+.btn-xs.y{border-color:rgba(240,192,64,.4);color:var(--accent2)}
+.btn-xs.r{border-color:rgba(255,92,92,.4);color:var(--danger)}
+.btn-xs.r:hover{background:rgba(255,92,92,.1)}
+.btn-primary{background:var(--accent);color:#0b0f0a;font-weight:700;font-size:14px;padding:12px 22px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-primary:hover{box-shadow:0 6px 20px rgba(61,224,160,.35)}
+.btn-ghost{background:transparent;color:var(--text);font-weight:500;font-size:14px;padding:12px 22px;border-radius:10px;border:1px solid var(--border);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-ghost:hover{border-color:var(--accent)}
+
+/* PRÓXIMA SESIÓN CARD */
+.proxima{background:linear-gradient(135deg,rgba(61,224,160,.1),rgba(240,192,64,.05));border:1px solid rgba(61,224,160,.25);border-radius:20px;padding:26px;margin-bottom:26px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.prox-left{flex:1;min-width:200px}
+.prox-label{font-size:10px;font-family:'DM Mono',monospace;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.prox-cliente{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:4px}
+.prox-meta{font-size:13px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+.prox-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.btn-iniciar{background:var(--accent);color:#0b0f0a;font-weight:700;font-size:13px;padding:12px 20px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-iniciar:hover{box-shadow:0 8px 24px rgba(61,224,160,.35)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--surface2);border-radius:12px;padding:4px;margin-bottom:22px}
+.tab{flex:1;padding:10px;border-radius:9px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+
+/* RESEÑA */
+.resena-card{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:10px}
+.res-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.res-nombre{font-weight:600;font-size:14px}
+.res-fecha{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.res-stars{color:var(--accent2);font-size:14px;margin-bottom:6px}
+.res-txt{font-size:13px;color:var(--muted);line-height:1.7}
+
+/* PERFIL */
+.perfil-top{background:linear-gradient(135deg,rgba(61,224,160,.08),rgba(240,192,64,.04));border:1px solid var(--border);border-radius:20px;padding:26px;display:flex;align-items:center;gap:18px;margin-bottom:18px}
+.perf-av{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#20a070);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#0b0f0a;flex-shrink:0}
+.perf-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:2px}
+.perf-email{font-size:13px;color:var(--muted);margin-bottom:8px}
+.perf-tags{display:flex;gap:6px;flex-wrap:wrap}
+.ptag{font-size:10px;font-family:'DM Mono',monospace;padding:3px 9px;border-radius:5px;background:rgba(61,224,160,.1);color:var(--accent);border:1px solid rgba(61,224,160,.2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pf{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:15px}
+.pf-lbl{font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.pf-val{font-size:14px;font-weight:500}
+
+/* FINANZAS */
+.fin-big{background:linear-gradient(135deg,rgba(61,224,160,.1),rgba(240,192,64,.06));border:1px solid rgba(61,224,160,.2);border-radius:18px;padding:28px;text-align:center;margin-bottom:18px}
+.fin-num{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--accent);letter-spacing:2px;line-height:1}
+.fin-lbl{font-size:13px;color:var(--muted);margin-top:6px}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-top:18px}
+.tw-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tw-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px}
+table{width:100%;border-collapse:collapse}
+th{padding:11px 18px;text-align:left;font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{padding:13px 18px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* DISPONIBILIDAD */
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:18px}
+.day-btn{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s;font-size:12px;font-weight:600}
+.day-btn:hover{border-color:var(--accent)}
+.day-btn.on{background:rgba(61,224,160,.12);border-color:var(--accent);color:var(--accent)}
+.day-btn .day-name{font-size:10px;color:var(--muted);margin-bottom:4px;font-family:'DM Mono',monospace;letter-spacing:.5px;display:block}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:var(--surface);border:1px solid rgba(61,224,160,.15);border-radius:22px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:40px;position:relative;animation:up .3s cubic-bezier(.16,1,.3,1)}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--surface2);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{color:var(--text)}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* CHART BAR */
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-lbl{font-size:11px;color:var(--muted);width:70px;flex-shrink:0;font-family:'DM Mono',monospace}
+.bar-track{flex:1;background:var(--surface2);border-radius:4px;height:7px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .7s cubic-bezier(.16,1,.3,1)}
+.bar-val{font-size:11px;color:var(--accent);font-family:'DM Mono',monospace;width:55px;text-align:right;flex-shrink:0}
+
+/* SEC HEADER */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
+
+/* MEJORAS ASESOR */
+.stat-detail{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.sd-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.sd-val{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--accent)}
+.sd-lbl{font-size:10px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace}
+.avatar-upload{position:relative;cursor:pointer}
+.avatar-upload:hover::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.reagendar-btn{background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.2);color:var(--accent2);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.reagendar-btn:hover{background:rgba(240,192,64,.2)}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%)}
+  .main{margin-left:0}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .grid2{grid-template-columns:1fr}
+  .day-grid{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="loginWrap" style="width:100%;display:flex;align-items:center;justify-content:center;min-height:100vh;position:relative;overflow:hidden">
+  <div style="position:absolute;font-family:'Bebas Neue',sans-serif;font-size:28vw;color:rgba(61,224,160,.025);letter-spacing:8px;pointer-events:none;user-select:none;white-space:nowrap">ASESOR</div>
+  <div class="login-card" style="background:var(--surface);border:1px solid rgba(61,224,160,.15);border-radius:24px;padding:48px;width:100%;max-width:420px;position:relative;z-index:1;animation:up .4s cubic-bezier(.16,1,.3,1)">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--accent);margin-bottom:4px">Asesores<span style="color:var(--text)">Ya</span></div>
+    <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--accent);letter-spacing:2px;background:rgba(61,224,160,.1);border:1px solid rgba(61,224,160,.2);padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:28px">// PANEL ASESOR</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;margin-bottom:6px">ACCESO<br>ASESOR</h2>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.6">Ingresá con el email y contraseña que te enviamos al ser aprobado.</p>
+    <div id="loginErr" style="background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.3);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--danger);margin-bottom:16px;display:none">❌ Email o contraseña incorrectos.</div>
+    <div class="field"><label>Email</label><input type="email" id="lEmail" placeholder="tu@email.com"></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="lPass" placeholder="••••••••"></div>
+    <button class="btn-green" onclick="loginAsesor()">Ingresar →</button>
+
+    <!-- USUARIOS DE PRUEBA -->
+    <div style="background:rgba(61,224,160,.06);border:1px solid rgba(61,224,160,.2);border-radius:12px;padding:14px;margin-top:16px">
+      <div style="font-size:10px;font-family:DM Mono,monospace;color:var(--accent2);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">👤 Usuarios de prueba</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface);border-radius:8px;padding:8px 12px;cursor:pointer" onclick="usarDemo('laura@asesoresya.com','1234')">
+          <div><div style="font-size:13px;font-weight:600">👩‍⚖️ Dra. Laura Méndez</div><div style="font-size:11px;color:var(--muted);font-family:DM Mono,monospace">laura@asesoresya.com · 1234</div></div>
+          <span style="font-size:11px;color:var(--accent2);border:1px solid rgba(61,224,160,.3);padding:3px 8px;border-radius:5px">Usar →</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface);border-radius:8px;padding:8px 12px;cursor:pointer" onclick="usarDemo('pablo@asesoresya.com','1234')">
+          <div><div style="font-size:13px;font-weight:600">💼 Ing. Pablo Romero</div><div style="font-size:11px;color:var(--muted);font-family:DM Mono,monospace">pablo@asesoresya.com · 1234</div></div>
+          <span style="font-size:11px;color:var(--accent2);border:1px solid rgba(61,224,160,.3);padding:3px 8px;border-radius:5px">Usar →</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface);border-radius:8px;padding:8px 12px;cursor:pointer" onclick="usarDemo('sofia@asesoresya.com','1234')">
+          <div><div style="font-size:13px;font-weight:600">🧘 Psic. Sofía Ramos</div><div style="font-size:11px;color:var(--muted);font-family:DM Mono,monospace">sofia@asesoresya.com · 1234</div></div>
+          <span style="font-size:11px;color:var(--accent2);border:1px solid rgba(61,224,160,.3);padding:3px 8px;border-radius:5px">Usar →</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-top:14px">¿Todavía no sos asesor? <a href="index.html" style="color:var(--accent);text-decoration:none">Postulate acá</a></div>
+  </div>
+</div>
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div id="dashWrap" style="display:none;width:100%;min-height:100vh">
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-text">Asesores<span>Ya</span></div>
+    <div class="sb-logo-sub">// panel asesor</div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">L</div>
+    <div>
+      <div class="sb-name" id="sbName">Dra. Laura Méndez</div>
+      <div class="sb-rol" id="sbRol">Legal / Civil</div>
+      <div class="sb-online">En línea</div>
+    </div>
+  </div>
+
+  <div class="nav-sec">Principal</div>
+  <button class="nav-item active" onclick="showPage('inicio',this)"><span class="ico">🏠</span>Inicio</button>
+  <button class="nav-item" onclick="showPage('solicitudes',this)"><span class="ico">📥</span>Solicitudes<span class="badge">2</span></button>
+  <button class="nav-item" onclick="showPage('sesiones',this)"><span class="ico">📅</span>Mis sesiones</button>
+
+  <div class="nav-sec">Actividad</div>
+  <button class="nav-item" onclick="showPage('resenas',this)"><span class="ico">⭐</span>Mis reseñas</button>
+  <button class="nav-item" onclick="showPage('finanzas',this)"><span class="ico">💰</span>Mis ganancias</button>
+  <button class="nav-item" onclick="showPage('disponibilidad',this)"><span class="ico">🗓️</span>Disponibilidad</button>
+
+  <div class="nav-sec">Cuenta</div>
+  <button class="nav-item" onclick="showPage('perfil',this)"><span class="ico">👤</span>Mi perfil</button>
+
+  <div class="sb-footer">
+    <button class="nav-item" style="color:var(--danger)" onclick="cerrarSesion()"><span class="ico">🚪</span>Cerrar sesión</button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="pageTitle">INICIO</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)"></div>
+      <span style="font-size:13px;color:var(--muted)" id="topEmail"></span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── INICIO ── -->
+    <div id="page-inicio">
+      <div class="stats-grid">
+        <div class="sc"><span class="sc-icon">📅</span><div class="sc-val g">12</div><div class="sc-lbl">Sesiones este mes</div><div class="sc-delta">↑ +3 vs mes ant.</div></div>
+        <div class="sc"><span class="sc-icon">💰</span><div class="sc-val y">$72k</div><div class="sc-lbl">Ganado este mes</div><div class="sc-delta">↑ 70% del total</div></div>
+        <div class="sc"><span class="sc-icon">⭐</span><div class="sc-val g">4.9</div><div class="sc-lbl">Rating promedio</div><div class="sc-delta">↑ 24 reseñas</div></div>
+        <div class="sc"><span class="sc-icon">📥</span><div class="sc-val b">2</div><div class="sc-lbl">Solicitudes nuevas</div><div class="sc-delta">Sin responder</div></div>
+      </div>
+      <div class="stat-detail">
+        <div class="sd-item"><div class="sd-val">89</div><div class="sd-lbl">Sesiones totales</div></div>
+        <div class="sd-item"><div class="sd-val">$636k</div><div class="sd-lbl">Ganado en total</div></div>
+        <div class="sd-item"><div class="sd-val">100%</div><div class="sd-lbl">Tasa de completadas</div></div>
+      </div>
+
+      <!-- Próxima sesión -->
+      <div class="proxima">
+        <div class="prox-left">
+          <div class="prox-label">🟢 Próxima sesión</div>
+          <div class="prox-cliente">María González</div>
+          <div class="prox-meta">
+            <span>📅 Jueves 22 mayo · 15:00 hs</span>
+            <span>📹 Videollamada</span>
+            <span style="font-family:'DM Mono',monospace;color:var(--accent2)">$8.500</span>
+          </div>
+        </div>
+        <div class="prox-actions">
+          <button class="btn-iniciar" onclick="abrirZoomModal()">📹 Iniciar Zoom</button>
+          <button style="background:transparent;color:var(--muted);font-size:12px;border:none;cursor:pointer;padding:6px;font-family:'DM Sans',sans-serif" onclick="if(confirm('¿Cancelar sesión?'))alert('Solicitud enviada al admin.')">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Solicitudes nuevas -->
+      <div class="sec-header">
+        <div><div class="sec-title">SOLICITUDES NUEVAS</div></div>
+        <button class="btn-xs g" onclick="showPage('solicitudes',null)">Ver todas →</button>
+      </div>
+
+      <div class="sol-card nueva" onclick="abrirSolicitud(0)">
+        <div class="sol-header">
+          <div>
+            <div class="sol-name">Lucía Fernández</div>
+            <div class="sol-meta"><span>⚖️ Legal / Civil</span><span class="sol-dot"></span><span>📹 Videollamada</span><span class="sol-dot"></span><span>Hace 2 horas</span></div>
+          </div>
+          <span class="status s-pend">NUEVA</span>
+        </div>
+        <div class="sol-obj">Necesito asesoramiento sobre un contrato de alquiler con cláusulas que me parecen abusivas. Quiero saber si tengo opciones legales.</div>
+        <div class="sol-actions">
+          <button class="btn-xs g" onclick="event.stopPropagation();abrirPropuestaHorario(0)">📅 Proponer horario</button>
+          <button class="btn-xs r" onclick="event.stopPropagation();if(confirm('¿Rechazar solicitud?'))alert('Solicitud rechazada.')">Rechazar</button>
+        </div>
+      </div>
+
+      <div class="sol-card nueva" onclick="abrirSolicitud(1)">
+        <div class="sol-header">
+          <div>
+            <div class="sol-name">Roberto Sánchez</div>
+            <div class="sol-meta"><span>⚖️ Legal / Laboral</span><span class="sol-dot"></span><span>📍 Presencial</span><span class="sol-dot"></span><span>Hace 5 horas</span></div>
+          </div>
+          <span class="status s-pend">NUEVA</span>
+        </div>
+        <div class="sol-obj">Me despidieron sin causa. Quiero saber si tengo derecho a indemnización y cuánto me correspondería según mi antigüedad.</div>
+        <div class="sol-actions">
+          <button class="btn-xs g" onclick="event.stopPropagation();abrirPropuestaHorario(1)">📅 Proponer horario</button>
+          <button class="btn-xs r" onclick="event.stopPropagation();if(confirm('¿Rechazar solicitud?'))alert('Solicitud rechazada.')">Rechazar</button>
+        </div>
+      </div>
+
+      <!-- Ganancias rápido -->
+      <div class="sec-header" style="margin-top:26px">
+        <div><div class="sec-title">GANANCIAS POR MES</div></div>
+        <button class="btn-xs y" onclick="showPage('finanzas',null)">Ver detalle →</button>
+      </div>
+      <div class="card">
+        <div class="bar-row"><span class="bar-lbl">Marzo</span><div class="bar-track"><div class="bar-fill" style="width:50%"></div></div><span class="bar-val">$48k</span></div>
+        <div class="bar-row"><span class="bar-lbl">Abril</span><div class="bar-track"><div class="bar-fill" style="width:65%"></div></div><span class="bar-val">$62k</span></div>
+        <div class="bar-row"><span class="bar-lbl">Mayo</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div><span class="bar-val">$72k</span></div>
+      </div>
+    </div>
+
+    <!-- ── SOLICITUDES ── -->
+    <div id="page-solicitudes" class="hidden">
+      <div class="tabs">
+        <button class="tab active" onclick="filterSols(this,'todas')">Todas (4)</button>
+        <button class="tab" onclick="filterSols(this,'nueva')">Nuevas (2)</button>
+        <button class="tab" onclick="filterSols(this,'propuesta')">Con propuesta (1)</button>
+        <button class="tab" onclick="filterSols(this,'rechazada')">Rechazadas (1)</button>
+      </div>
+      <div id="solsList">
+        <div class="sol-card nueva" data-st="nueva" onclick="abrirSolicitud(0)">
+          <div class="sol-header"><div><div class="sol-name">Lucía Fernández</div><div class="sol-meta"><span>⚖️ Legal / Civil</span><span class="sol-dot"></span><span>📹 Videollamada</span></div></div><span class="status s-pend">NUEVA</span></div>
+          <div class="sol-obj">Contrato de alquiler con cláusulas abusivas. Quiero saber si tengo opciones legales.</div>
+          <div class="sol-actions"><button class="btn-xs g" onclick="event.stopPropagation();abrirPropuestaHorario(0)">📅 Proponer horario</button><button class="btn-xs r" onclick="event.stopPropagation();if(confirm('¿Rechazar?'))alert('Rechazada.')">Rechazar</button></div>
+        </div>
+        <div class="sol-card nueva" data-st="nueva" onclick="abrirSolicitud(1)">
+          <div class="sol-header"><div><div class="sol-name">Roberto Sánchez</div><div class="sol-meta"><span>⚖️ Legal / Laboral</span><span class="sol-dot"></span><span>📍 Presencial</span></div></div><span class="status s-pend">NUEVA</span></div>
+          <div class="sol-obj">Despido sin causa. Quiero saber si tengo derecho a indemnización.</div>
+          <div class="sol-actions"><button class="btn-xs g" onclick="event.stopPropagation();abrirPropuestaHorario(1)">📅 Proponer horario</button><button class="btn-xs r" onclick="event.stopPropagation();if(confirm('¿Rechazar?'))alert('Rechazada.')">Rechazar</button></div>
+        </div>
+        <div class="sol-card" data-st="propuesta" onclick="abrirSolicitud(2)">
+          <div class="sol-header"><div><div class="sol-name">Carlos Vidal</div><div class="sol-meta"><span>⚖️ Legal / Familia</span><span class="sol-dot"></span><span>📹 Videollamada</span></div></div><span class="status s-ok">PROPUESTA ENVIADA</span></div>
+          <div class="sol-obj">Divorcio de mutuo acuerdo. Queremos separar bienes y definir custodia de los hijos.</div>
+          <div class="sol-actions"><span style="font-size:12px;color:var(--muted)">📅 Propuesto: Lunes 26 mayo · 11:00 hs · Esperando pago del cliente</span></div>
+        </div>
+        <div class="sol-card" data-st="rechazada" onclick="abrirSolicitud(3)" style="opacity:.5">
+          <div class="sol-header"><div><div class="sol-name">Ana Ruiz</div><div class="sol-meta"><span>⚖️ Legal / Penal</span><span class="sol-dot"></span><span>📹 Videollamada</span></div></div><span class="status s-done">RECHAZADA</span></div>
+          <div class="sol-obj">Consulta sobre derecho penal (fuera de mi especialidad).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SESIONES ── -->
+    <div id="page-sesiones" class="hidden">
+      <div class="tabs">
+        <button class="tab active" onclick="filterTabs(this,'todas-ses')">Todas</button>
+        <button class="tab" onclick="filterTabs(this,'confirmada')">Confirmadas</button>
+        <button class="tab" onclick="filterTabs(this,'realizada')">Realizadas</button>
+      </div>
+      <div id="sesList">
+        <div class="sol-card" data-st="confirmada">
+          <div class="sol-header"><div><div class="sol-name">María González</div><div class="sol-meta"><span>📅 22 mayo · 15:00</span><span class="sol-dot"></span><span>📹 Zoom</span><span class="sol-dot"></span><span style="font-family:'DM Mono',monospace;color:var(--accent2)">$8.500</span></div></div><span class="status s-ok">CONFIRMADA</span></div>
+          <div class="sol-actions">
+            <button class="btn-xs g" onclick="iniciarSesion('ses_001',this)">📹 Iniciar Zoom</button>
+            <button class="btn-xs" onclick="alert('Notas de sesión abiertas.')">📝 Notas</button>
+            <button class="reagendar-btn" onclick="alert('Solicitud de reagendado enviada al cliente.')">🔄 Reagendar</button>
+          </div>
+        </div>
+        <div class="sol-card" data-st="realizada">
+          <div class="sol-header"><div><div class="sol-name">Juan Pérez</div><div class="sol-meta"><span>📅 15 mayo · 10:00</span><span class="sol-dot"></span><span>📹 Zoom</span><span class="sol-dot"></span><span style="font-family:'DM Mono',monospace;color:var(--accent2)">$8.500</span></div></div><span class="status s-done">REALIZADA</span></div>
+          <div class="sol-actions"><span style="font-size:12px;color:var(--accent)">⭐ Reseña: ★★★★★</span></div>
+        </div>
+        <div class="sol-card" data-st="realizada">
+          <div class="sol-header"><div><div class="sol-name">Ana Ruiz</div><div class="sol-meta"><span>📅 8 mayo · 16:00</span><span class="sol-dot"></span><span>📍 Presencial</span><span class="sol-dot"></span><span style="font-family:'DM Mono',monospace;color:var(--accent2)">$8.500</span></div></div><span class="status s-done">REALIZADA</span></div>
+          <div class="sol-actions"><span style="font-size:12px;color:var(--muted)">Sin reseña aún</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RESEÑAS ── -->
+    <div id="page-resenas" class="hidden">
+      <div class="sec-header">
+        <div><div class="sec-title">MIS RESEÑAS</div></div>
+        <div style="background:rgba(61,224,160,.1);border:1px solid rgba(61,224,160,.2);border-radius:10px;padding:10px 18px;text-align:center">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent)">4.9 ★</div>
+          <div style="font-size:11px;color:var(--muted)">24 reseñas</div>
+        </div>
+      </div>
+      <div class="resena-card">
+        <div class="res-header"><div><div class="res-nombre">María González</div><div class="res-fecha">8 mayo 2025</div></div><span class="status s-ok">PUBLICADA</span></div>
+        <div class="res-stars">★★★★★</div>
+        <div class="res-txt">Excelente profesional. Me explicó todo el contrato con mucha claridad y detectó cláusulas abusivas que yo no había visto. Muy recomendable.</div>
+      </div>
+      <div class="resena-card">
+        <div class="res-header"><div><div class="res-nombre">Juan Pérez</div><div class="res-fecha">15 mayo 2025</div></div><span class="status s-ok">PUBLICADA</span></div>
+        <div class="res-stars">★★★★★</div>
+        <div class="res-txt">Muy buen servicio, resolví mi duda laboral en una sola sesión. Explicación clara y directa. Lo recomiendo sin dudas.</div>
+      </div>
+      <div class="resena-card">
+        <div class="res-header"><div><div class="res-nombre">Sofía M.</div><div class="res-fecha">1 mayo 2025</div></div><span class="status s-ok">PUBLICADA</span></div>
+        <div class="res-stars">★★★★☆</div>
+        <div class="res-txt">Muy buena consulta, aunque me hubiera gustado un poco más de tiempo para preguntas al final.</div>
+      </div>
+    </div>
+
+    <!-- ── FINANZAS ── -->
+    <div id="page-finanzas" class="hidden">
+      <div class="fin-big">
+        <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--accent);letter-spacing:2px;margin-bottom:8px">TUS GANANCIAS NETAS (70%)</div>
+        <div class="fin-num">$103.600</div>
+        <div class="fin-lbl">Total acumulado · Mayo 2025</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px">
+        <div class="sc"><span class="sc-icon">📅</span><div class="sc-val g">12</div><div class="sc-lbl">Sesiones este mes</div></div>
+        <div class="sc"><span class="sc-icon">💸</span><div class="sc-val y">$102k</div><div class="sc-lbl">Facturado este mes</div></div>
+        <div class="sc"><span class="sc-icon">✅</span><div class="sc-val b">$71.4k</div><div class="sc-lbl">Acreditado (70%)</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="tw-header"><div class="tw-title">HISTORIAL DE PAGOS</div><button class="btn-xs">Descargar PDF</button></div>
+        <table>
+          <thead><tr><th>Fecha</th><th>Cliente</th><th>Honorario</th><th>Comisión 30%</th><th>Tu ganancia</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--muted)">22 may</td><td>María G.</td><td style="font-family:'DM Mono',monospace">$8.500</td><td style="font-family:'DM Mono',monospace;color:var(--danger)">-$2.550</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$5.950</td><td><span class="status s-pend">PENDIENTE</span></td></tr>
+            <tr><td style="color:var(--muted)">15 may</td><td>Juan P.</td><td style="font-family:'DM Mono',monospace">$8.500</td><td style="font-family:'DM Mono',monospace;color:var(--danger)">-$2.550</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$5.950</td><td><span class="status s-ok">ACREDITADO</span></td></tr>
+            <tr><td style="color:var(--muted)">8 may</td><td>Ana R.</td><td style="font-family:'DM Mono',monospace">$8.500</td><td style="font-family:'DM Mono',monospace;color:var(--danger)">-$2.550</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$5.950</td><td><span class="status s-ok">ACREDITADO</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── DISPONIBILIDAD ── -->
+    <div id="page-disponibilidad" class="hidden">
+      <div class="sec-header"><div class="sec-title">MI DISPONIBILIDAD</div><button class="btn-primary" onclick="guardarDisponibilidad()">Guardar cambios</button></div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6">Marcá los días y horarios en que podés atender. Esto ayuda a los clientes a saber cuándo estás disponible.</p>
+      <div class="card" style="margin-bottom:16px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;margin-bottom:14px">DÍAS DISPONIBLES</div>
+        <div class="day-grid">
+          <div class="day-btn on" onclick="this.classList.toggle('on')"><span class="day-name">LUN</span>✓</div>
+          <div class="day-btn on" onclick="this.classList.toggle('on')"><span class="day-name">MAR</span>✓</div>
+          <div class="day-btn on" onclick="this.classList.toggle('on')"><span class="day-name">MIÉ</span>✓</div>
+          <div class="day-btn on" onclick="this.classList.toggle('on')"><span class="day-name">JUE</span>✓</div>
+          <div class="day-btn" onclick="this.classList.toggle('on')"><span class="day-name">VIE</span>—</div>
+          <div class="day-btn" onclick="this.classList.toggle('on')"><span class="day-name">SÁB</span>—</div>
+          <div class="day-btn" onclick="this.classList.toggle('on')"><span class="day-name">DOM</span>—</div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;margin-bottom:14px">HORARIO DE ATENCIÓN</div>
+        <div class="two-col">
+          <div class="field"><label>Desde</label><input type="time" value="09:00"></div>
+          <div class="field"><label>Hasta</label><input type="time" value="18:00"></div>
+        </div>
+        <div class="field"><label>Duración de cada sesión</label>
+          <select><option>30 minutos</option><option selected>60 minutos</option><option>90 minutos</option></select>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PERFIL ── -->
+    <div id="page-perfil" class="hidden">
+      <div class="perfil-top">
+        <div class="perf-av avatar-upload" id="perfAvatar" onclick="document.getElementById('fotoInput').click()" title="Cambiar foto">L</div>
+      <input type="file" id="fotoInput" accept="image/*" style="display:none" onchange="cambiarFoto(this)">
+        <div>
+          <div class="perf-name" id="perfName">Dra. Laura Méndez</div>
+          <div class="perf-email" id="perfEmail">laura@asesoresya.com</div>
+          <div class="perf-tags">
+            <span class="ptag">Asesor verificado ✓</span>
+            <span class="ptag">Legal / Civil</span>
+            <span class="ptag">📹 📍</span>
+            <span class="ptag">4.9 ★</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-header"><div class="sec-title">MIS DATOS</div><button class="btn-xs g" onclick="editarPerfil()">✏️ Editar</button></div>
+      <div class="grid2" id="perfilGrid">
+        <div class="pf"><div class="pf-lbl">Nombre completo</div><div class="pf-val" id="pfNombre">Dra. Laura Méndez</div></div>
+        <div class="pf"><div class="pf-lbl">Email</div><div class="pf-val" id="pfEmail">laura@asesoresya.com</div></div>
+        <div class="pf"><div class="pf-lbl">Especialidad</div><div class="pf-val">Legal / Civil</div></div>
+        <div class="pf"><div class="pf-lbl">Precio por sesión</div><div class="pf-val" style="color:var(--accent);font-family:'DM Mono',monospace">$8.500</div></div>
+        <div class="pf"><div class="pf-lbl">Modalidad</div><div class="pf-val">📹 Zoom + 📍 Presencial</div></div>
+        <div class="pf"><div class="pf-lbl">Zona</div><div class="pf-val">CABA, Buenos Aires</div></div>
+      </div>
+      <div style="margin-top:18px"><div class="sec-title" style="margin-bottom:14px;font-size:18px">LINK DE ZOOM</div>
+        <div class="pf"><div class="pf-lbl">Tu link personal de Zoom</div>
+          <input type="text" id="zoomLinkPerfil" value="https://zoom.us/j/92345678901" style="margin-top:8px">
+        </div>
+      </div>
+      <div style="margin-top:18px"><div class="sec-title" style="margin-bottom:14px;font-size:18px">BIO PÚBLICA</div>
+        <textarea style="min-height:100px" placeholder="Describí tu experiencia, especialización y por qué los clientes deberían elegirte...">Abogada civilista con 12 años de experiencia en derecho de familia, contratos y litigios civiles. Egresada de la UBA con especialización en derecho privado. Atiendo en CABA y por Zoom a todo el país.</textarea>
+      </div>
+      <button class="btn-primary" style="margin-top:16px;padding:14px 28px" onclick="alert('✅ Perfil actualizado correctamente.')">Guardar cambios →</button>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /dashWrap -->
+
+<!-- ══ MODAL SOLICITUD DETALLE ══ -->
+<div class="modal-overlay" id="modalSolicitud" onclick="if(event.target===this)this.classList.remove('active')">
+<div class="modal"><button class="modal-close" onclick="document.getElementById('modalSolicitud').classList.remove('active')">✕</button><div id="solBody"></div></div>
+</div>
+
+<!-- ══ MODAL PROPUESTA HORARIO ══ -->
+<div class="modal-overlay" id="modalPropuesta" onclick="if(event.target===this)this.classList.remove('active')">
+<div class="modal">
+  <button class="modal-close" onclick="document.getElementById('modalPropuesta').classList.remove('active')">✕</button>
+  <h3>PROPONER<br>HORARIO</h3>
+  <p class="modal-sub" id="propSubtitle">Elegí cuándo podés atender esta solicitud. Máximo 2 semanas desde hoy.</p>
+  <div class="two-col">
+    <div class="field"><label>Fecha</label><input type="date" id="propFecha"></div>
+    <div class="field"><label>Hora</label><input type="time" id="propHora" value="10:00"></div>
+  </div>
+  <div class="field"><label>Link de Zoom (si es videollamada)</label><input type="text" id="propZoom" placeholder="https://zoom.us/j/..."></div>
+  <div class="field"><label>Dirección (si es presencial)</label><input type="text" id="propDir" placeholder="Ej: Av. Córdoba 1250, piso 3, CABA"></div>
+  <div class="field"><label>Nota para el cliente (opcional)</label><textarea id="propNota" placeholder="Ej: Traer documentación original, llegar 5 min antes..." style="min-height:70px"></textarea></div>
+  <div style="display:flex;gap:12px;margin-top:8px">
+    <button class="btn-ghost" style="flex:1" onclick="document.getElementById('modalPropuesta').classList.remove('active')">Cancelar</button>
+    <button class="btn-primary" style="flex:2" onclick="enviarPropuesta()">Enviar propuesta al cliente →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ MODAL ZOOM ══ -->
+<div class="modal-overlay" id="modalZoom" onclick="if(event.target===this)this.classList.remove('active')">
+<div class="modal" style="max-width:440px">
+  <button class="modal-close" onclick="document.getElementById('modalZoom').classList.remove('active')">✕</button>
+  <h3>INICIAR<br>SESIÓN</h3>
+  <p class="modal-sub">Sesión con María González · Jueves 22 mayo · 15:00 hs</p>
+  <div style="background:rgba(61,224,160,.06);border:1px solid rgba(61,224,160,.25);border-radius:14px;padding:20px;margin-bottom:20px">
+    <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--accent);letter-spacing:1px;margin-bottom:8px">🎥 TU LINK DE ZOOM</div>
+    <div style="font-family:'DM Mono',monospace;font-size:13px;word-break:break-all">https://zoom.us/j/92345678901</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--accent2);letter-spacing:3px;margin-top:6px">ID: 923 4567 8901</div>
+  </div>
+  <button class="btn-green" onclick="alert('Abriendo Zoom...')">📹 Abrir Zoom ahora</button>
+  <button class="btn-xs" style="width:100%;margin-top:10px" onclick="navigator.clipboard.writeText('https://zoom.us/j/92345678901').then(()=>alert('¡Copiado!'))">📋 Copiar link</button>
+</div>
+</div>
+
+<script>
+// ── CREDENCIALES DEMO ──
+// En producción esto viene del backend
+const ASESORES_DB = {
+  'laura@asesoresya.com': { pass:'1234', nombre:'Dra. Laura Méndez', inicial:'L', rol:'Legal / Civil' },
+  'pablo@asesoresya.com': { pass:'1234', nombre:'Ing. Pablo Romero', inicial:'P', rol:'Finanzas' },
+  'sofia@asesoresya.com': { pass:'1234', nombre:'Psic. Sofía Ramos', inicial:'S', rol:'Coaching' },
+};
+
+const $ = id => document.getElementById(id);
+
+function usarDemo(email, pass){
+  document.getElementById('lEmail').value = email;
+  document.getElementById('lPass').value = pass;
+  loginAsesor();
+}
+
+function loginAsesor(){
+  const email = $('lEmail').value.trim().toLowerCase();
+  const pass  = $('lPass').value;
+  const asesor = ASESORES_DB[email];
+
+  if(asesor && asesor.pass === pass){
+    $('loginErr').style.display='none';
+    $('loginWrap').style.display='none';
+    $('dashWrap').style.display='flex';
+    // Personalizar panel
+    $('sbAvatar').textContent = asesor.inicial;
+    $('sbName').textContent   = asesor.nombre;
+    $('sbRol').textContent    = asesor.rol;
+    $('topEmail').textContent = email;
+    $('perfAvatar').textContent = asesor.inicial;
+    $('perfName').textContent   = asesor.nombre;
+    $('perfEmail').textContent  = email;
+    $('pfNombre').textContent   = asesor.nombre;
+    $('pfEmail').textContent    = email;
+  } else {
+    $('loginErr').style.display='block';
+    $('lPass').value='';
+  }
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter' && $('loginWrap').style.display!=='none') loginAsesor();
+});
+
+function cerrarSesion(){
+  if(confirm('¿Cerrar sesión?')){
+    // Destruir token y limpiar sesión
+    sessionStorage.clear();
+    localStorage.removeItem('asesor_token');
+    // Redireccionamiento duro - borra historial de navegación
+    window.location.replace('index.html');
+  }
+}
+
+// ── PAGES ──
+const pages = ['inicio','solicitudes','sesiones','resenas','finanzas','disponibilidad','perfil'];
+const titles = {inicio:'INICIO',solicitudes:'SOLICITUDES',sesiones:'MIS SESIONES',resenas:'MIS RESEÑAS',finanzas:'MIS GANANCIAS',disponibilidad:'DISPONIBILIDAD',perfil:'MI PERFIL'};
+
+function showPage(p, btn){
+  pages.forEach(pg => $('page-'+pg).classList.add('hidden'));
+  $('page-'+p).classList.remove('hidden');
+  $('pageTitle').textContent = titles[p];
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+// ── SOLICITUDES ──
+const SOLICITUDES = [
+  {nombre:'Lucía Fernández', area:'⚖️ Legal / Civil', mod:'📹 Videollamada', obj:'Necesito asesoramiento sobre un contrato de alquiler con cláusulas que me parecen abusivas.'},
+  {nombre:'Roberto Sánchez', area:'⚖️ Legal / Laboral', mod:'📍 Presencial', obj:'Me despidieron sin causa. Quiero saber si tengo derecho a indemnización y cuánto corresponde.'},
+  {nombre:'Carlos Vidal', area:'⚖️ Legal / Familia', mod:'📹 Videollamada', obj:'Divorcio de mutuo acuerdo. Queremos separar bienes y definir custodia.'},
+  {nombre:'Ana Ruiz', area:'⚖️ Legal / Penal', mod:'📹 Videollamada', obj:'Consulta sobre derecho penal.'},
+];
+
+function abrirSolicitud(i){
+  const s = SOLICITUDES[i];
+  $('solBody').innerHTML=`
+    <h3>${s.nombre}</h3>
+    <p class="modal-sub">${s.area} · ${s.mod}</p>
+    <div style="background:var(--surface2);border-radius:12px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.7;color:var(--muted)">${s.obj}</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-primary" style="flex:1" onclick="document.getElementById('modalSolicitud').classList.remove('active');abrirPropuestaHorario(${i})">📅 Proponer horario</button>
+      <button class="btn-ghost" style="flex:1" onclick="if(confirm('¿Rechazar?')){document.getElementById('modalSolicitud').classList.remove('active');alert('Solicitud rechazada.')}">Rechazar</button>
+    </div>`;
+  $('modalSolicitud').classList.add('active');
+}
+
+function abrirPropuestaHorario(i){
+  const s = SOLICITUDES[i];
+  $('propSubtitle').textContent = `Para: ${s.nombre} · ${s.mod}`;
+  const hoy=new Date(), max=new Date();
+  max.setDate(hoy.getDate()+14);
+  $('propFecha').min = hoy.toISOString().split('T')[0];
+  $('propFecha').max = max.toISOString().split('T')[0];
+  $('propFecha').value = new Date(Date.now()+3*86400000).toISOString().split('T')[0];
+  $('modalPropuesta').classList.add('active');
+}
+
+function enviarPropuesta(){
+  const f=$('propFecha').value, h=$('propHora').value;
+  if(!f||!h){alert('Seleccioná fecha y hora.');return}
+  $('modalPropuesta').classList.remove('active');
+  setTimeout(()=>alert('✅ Propuesta enviada. El cliente recibirá la notificación y podrá pagar para confirmar.'),200);
+}
+
+// ── FILTROS ──
+function filterSols(btn, filter){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#solsList .sol-card').forEach(c=>{
+    const st = c.getAttribute('data-st') || '';
+    c.style.display = (filter==='todas' || st===filter) ? 'flex' : 'none';
+  });
+}
+
+// ── ZOOM ──
+function abrirZoomModal(){$('modalZoom').classList.add('active')}
+
+// ── OTROS ──
+function rechazarSolicitud(id, btn){
+  if(!confirm('¿Rechazar solicitud ' + id + '?')) return;
+  const card = btn.closest('.sol-card');
+  card.style.opacity = '.4';
+  card.setAttribute('data-st','rechazada');
+  card.querySelector('.status').textContent = 'RECHAZADA';
+  card.querySelector('.status').className = 'status s-done';
+  card.querySelectorAll('.btn-xs').forEach(b=>b.remove());
+  // En producción: fetch('/api/sesiones/'+id+'/rechazar', {method:'PUT',...})
+}
+
+function iniciarSesion(id, btn){
+  if(!confirm('¿Iniciar la sesión #' + id + '? Se marcará como EN CURSO.')){return;}
+  const card = btn.closest('.sol-card');
+  card.querySelector('.status').textContent = 'EN CURSO';
+  card.querySelector('.status').className = 'status' ;
+  card.querySelector('.status').style.background='rgba(92,159,255,.12)';
+  card.querySelector('.status').style.color='#5c9fff';
+  card.querySelector('.status').style.border='1px solid rgba(92,159,255,.25)';
+  btn.textContent = '✅ Finalizar sesión';
+  btn.onclick = function(){ finalizarSesion(id, this); };
+  abrirZoomModal();
+}
+
+function finalizarSesion(id, btn){
+  if(!confirm('¿Marcar la sesión como FINALIZADA? Esto libera el pago al asesor.')) return;
+  const card = btn.closest('.sol-card');
+  card.querySelector('.status').textContent = 'FINALIZADA';
+  card.querySelector('.status').className = 'status s-done';
+  card.querySelectorAll('.btn-xs').forEach(b=>b.remove());
+  card.setAttribute('data-st','realizada');
+  // En producción: fetch('/api/sesiones/'+id+'/marcar-realizada', {method:'PUT',...})
+  alert('✅ Sesión finalizada. El pago se liberará al asesor dentro de las 48 hs.');
+}
+
+function guardarDisponibilidad(){alert('✅ Disponibilidad guardada correctamente.')}
+function editarPerfil(){alert('Modo edición — en producción esto abre los campos editables.')}
+function cambiarFoto(input){
+  if(!input.files[0]) return;
+  const file = input.files[0];
+  const tiposPermitidos = ['image/jpeg','image/jpg','image/png','image/webp'];
+  const maxSize = 2 * 1024 * 1024; // 2MB
+
+  if(!tiposPermitidos.includes(file.type)){
+    alert('❌ Formato no soportado. Solo se aceptan JPG, PNG o WEBP.');
+    input.value = '';
+    return;
+  }
+  if(file.size > maxSize){
+    alert('❌ La imagen es demasiado pesada. Máximo 2MB.');
+    input.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const av = document.getElementById('perfAvatar');
+    av.style.backgroundImage = `url(${e.target.result})`;
+    av.style.backgroundSize = 'cover';
+    av.style.backgroundPosition = 'center';
+    av.textContent = '';
+    document.getElementById('sbAvatar').style.backgroundImage = `url(${e.target.result})`;
+    document.getElementById('sbAvatar').style.backgroundSize = 'cover';
+    document.getElementById('sbAvatar').textContent = '';
+    alert('✅ Foto actualizada correctamente.');
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+</body>
+</html>

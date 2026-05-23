@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AsesoresYa — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07070d;--surface:#10101a;--surface2:#181825;--surface3:#1e1e2e;--border:rgba(255,255,255,0.07);--accent:#f0c040;--accent2:#3de0a0;--danger:#ff5c5c;--info:#5c9fff;--text:#f0efe8;--muted:#5a5a6a;--sidebar:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+/* LOGIN */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);position:relative;overflow:hidden}
+.login-screen::before{content:'ADMIN';position:absolute;font-family:'Bebas Neue',sans-serif;font-size:30vw;color:rgba(240,192,64,.02);letter-spacing:10px;pointer-events:none;user-select:none}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:48px;width:100%;max-width:420px;position:relative;z-index:1;animation:fadeUp .4s cubic-bezier(.16,1,.3,1)}
+@keyframes fadeUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--accent);margin-bottom:4px}
+.login-logo span{color:var(--text)}
+.login-badge{font-size:10px;font-family:'DM Mono',monospace;color:var(--danger);letter-spacing:2px;background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.2);padding:3px 10px;border-radius:100px;display:inline-block;margin-bottom:28px}
+.login-box h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;margin-bottom:6px}
+.login-box p{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.6}
+.field{margin-bottom:18px}
+label{display:block;font-size:11px;font-weight:500;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+input[type="text"],input[type="email"],input[type="password"],input[type="date"],input[type="time"],textarea,select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:13px 16px;outline:none;transition:border-color .2s;resize:none;appearance:none}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+.login-error{background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.3);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--danger);margin-bottom:16px;display:none}
+.btn-login{width:100%;background:var(--accent);color:#0a0a0f;font-weight:700;font-size:15px;padding:16px;border-radius:14px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;margin-top:4px}
+.btn-login:hover{box-shadow:0 10px 28px rgba(240,192,64,.35)}
+.codigo-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:14px;font-family:'DM Mono',monospace}
+
+/* DASHBOARD */
+.dashboard{display:none;min-height:100vh;flex-direction:column}
+.dashboard.active{display:flex}
+
+/* TOPBAR */
+.topbar{padding:16px 36px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(7,7,13,.9);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
+.top-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--accent)}
+.top-logo span{color:var(--text)}
+.top-right{display:flex;align-items:center;gap:12px}
+.admin-badge{font-size:10px;font-family:'DM Mono',monospace;color:var(--danger);letter-spacing:1.5px;background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.2);padding:4px 10px;border-radius:100px}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);font-size:12px;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger)}
+
+/* TABS PRINCIPALES */
+.main-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 36px;background:var(--surface);overflow-x:auto}
+.main-tab{padding:16px 20px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.main-tab:hover{color:var(--text)}
+.main-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.tab-badge{background:var(--danger);color:white;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px}
+
+/* CONTENT */
+.tab-content{padding:32px 36px;flex:1;overflow-y:auto}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* STAT CARDS */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden;transition:all .2s}
+.sc:hover{transform:translateY(-2px)}
+.sc-icon{font-size:20px;margin-bottom:10px;display:block}
+.sc-val{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;line-height:1}
+.sc-val.y{color:var(--accent)}
+.sc-val.g{color:var(--accent2)}
+.sc-val.b{color:var(--info)}
+.sc-val.r{color:var(--danger)}
+.sc-lbl{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* TABLE */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.table-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.table-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 20px;text-align:left;font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2)}
+td{padding:14px 20px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:.5px;font-family:'DM Mono',monospace}
+.status::before{content:'●';font-size:7px}
+.s-ok{background:rgba(61,224,160,.12);color:var(--accent2);border:1px solid rgba(61,224,160,.25)}
+.s-pend{background:rgba(240,192,64,.12);color:var(--accent);border:1px solid rgba(240,192,64,.25)}
+.s-danger{background:rgba(255,92,92,.12);color:var(--danger);border:1px solid rgba(255,92,92,.25)}
+.s-muted{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}
+
+/* BUTTONS */
+.btn-xs{font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-xs:hover{border-color:var(--accent);color:var(--accent)}
+.btn-xs.green{border-color:rgba(61,224,160,.4);color:var(--accent2)}
+.btn-xs.green:hover{background:rgba(61,224,160,.1)}
+.btn-xs.red{border-color:rgba(255,92,92,.4);color:var(--danger)}
+.btn-xs.red:hover{background:rgba(255,92,92,.1)}
+.btn-xs.yellow{border-color:rgba(240,192,64,.4);color:var(--accent)}
+.btn-xs.yellow:hover{background:rgba(240,192,64,.1)}
+.btn-primary{background:var(--accent);color:#0a0a0f;font-weight:700;font-size:13px;padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-primary:hover{box-shadow:0 6px 20px rgba(240,192,64,.35)}
+.btn-danger{background:var(--danger);color:white;font-weight:700;font-size:13px;padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:14px}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:4px}
+.card-meta{font-size:12px;color:var(--muted);margin-bottom:12px;font-family:'DM Mono',monospace}
+.card-body{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px}
+.card-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* FINANCE */
+.finance-big{background:linear-gradient(135deg,rgba(240,192,64,.1),rgba(61,224,160,.06));border:1px solid rgba(240,192,64,.2);border-radius:20px;padding:32px;text-align:center;margin-bottom:20px}
+.finance-num{font-family:'Bebas Neue',sans-serif;font-size:64px;color:var(--accent);letter-spacing:2px;line-height:1}
+.finance-lbl{font-size:13px;color:var(--muted);margin-top:6px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:999;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.active{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:22px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;padding:40px;position:relative;animation:fadeUp .3s cubic-bezier(.16,1,.3,1)}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--surface2);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.5}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* GRÁFICO SIMPLE */
+.chart-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.chart-bar-label{font-size:12px;color:var(--muted);width:80px;flex-shrink:0;font-family:'DM Mono',monospace}
+.chart-bar-track{flex:1;background:var(--surface2);border-radius:4px;height:8px;overflow:hidden}
+.chart-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s cubic-bezier(.16,1,.3,1)}
+.chart-bar-val{font-size:11px;color:var(--accent);font-family:'DM Mono',monospace;width:60px;text-align:right;flex-shrink:0}
+
+/* SEARCH BAR */
+.table-search{display:flex;gap:10px;align-items:center;margin-bottom:16px}
+.ts-input{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s;flex:1}
+.ts-input:focus{border-color:var(--accent)}
+.ts-select{background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 14px;outline:none;appearance:none;cursor:pointer}
+/* EXPORT */
+.export-btn{background:transparent;border:1px solid rgba(61,224,160,.3);color:var(--accent2);font-size:12px;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.export-btn:hover{background:rgba(61,224,160,.08)}
+/* TORTA SIMPLE */
+.donut-wrap{display:flex;align-items:center;gap:24px;padding:20px}
+.donut{width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--accent) 0% 40%,var(--accent2) 40% 70%,#5c9fff 70% 85%,var(--danger) 85% 100%);flex-shrink:0;position:relative}
+.donut::after{content:'';position:absolute;inset:30px;border-radius:50%;background:var(--surface)}
+.donut-legend{display:flex;flex-direction:column;gap:8px}
+.dl-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.dl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.hidden{display:none!important}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+@media(max-width:900px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .topbar,.tab-content{padding:16px 20px}
+  .main-tabs{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     LOGIN
+══════════════════════════════ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Asesores<span>Ya</span></div>
+    <div class="login-badge">// ACCESO RESTRINGIDO</div>
+    <h2>PANEL<br>ADMINISTRADOR</h2>
+    <p>Solo vos tenés acceso a esta sección. Ingresá con tu Gmail y código especial.</p>
+
+    <div id="loginError" class="login-error">❌ Gmail, contraseña o código incorrecto.</div>
+
+    <div class="field"><label>Gmail del administrador</label><input type="email" id="adminEmail" placeholder="tu@gmail.com" value=""></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="adminPass" placeholder="••••••••"></div>
+    <div class="field"><label>Código especial de acceso</label><input type="text" id="adminCodigo" placeholder="Código secreto" maxlength="20"></div>
+
+    <button class="btn-login" onclick="intentarLogin()">Ingresar al panel →</button>
+    <div class="codigo-hint">⚠️ Este panel es solo para el administrador de la plataforma</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     DASHBOARD
+══════════════════════════════ -->
+<div class="dashboard" id="dashboard">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="top-logo">Asesores<span>Ya</span></div>
+    <div class="top-right">
+      <span class="admin-badge">ADMIN</span>
+      <span style="font-size:13px;color:var(--muted)" id="adminNameShow"></span>
+      <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+    <button class="main-tab" onclick="showTab('asesores')">🎓 Asesores</button>
+    <button class="main-tab" onclick="showTab('clientes')">👥 Clientes</button>
+    <button class="main-tab" onclick="showTab('sesiones')">📅 Sesiones</button>
+    <button class="main-tab" onclick="showTab('finanzas')">💰 Finanzas</button>
+    <button class="main-tab" onclick="showTab('postulaciones')">📄 Postulaciones <span class="tab-badge">3</span></button>
+    <button class="main-tab" onclick="showTab('reembolsos')">💸 Reembolsos <span class="tab-badge">1</span></button>
+    <button class="main-tab" onclick="showTab('denuncias')">🚨 Denuncias <span class="tab-badge">2</span></button>
+    <button class="main-tab" onclick="showTab('resenas')">⭐ Reseñas</button>
+    <button class="main-tab" onclick="showTab('rendimiento')">📈 Rendimiento</button>
+    <button class="main-tab" onclick="showTab('contratos')">📋 Contratos</button>
+  </div>
+
+  <div class="tab-content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="tab-pane active" id="tab-dashboard">
+      <div class="stats-row">
+        <div class="sc"><span class="sc-icon">💰</span><div class="sc-val y">$186k</div><div class="sc-lbl">Ingresos totales</div></div>
+        <div class="sc"><span class="sc-icon">📈</span><div class="sc-val g">$55.8k</div><div class="sc-lbl">Comisiones (30%)</div></div>
+        <div class="sc"><span class="sc-icon">📅</span><div class="sc-val b">47</div><div class="sc-lbl">Sesiones este mes</div></div>
+        <div class="sc"><span class="sc-icon">🎓</span><div class="sc-val y">18</div><div class="sc-lbl">Asesores activos</div></div>
+        <div class="sc"><span class="sc-icon">👥</span><div class="sc-val g">134</div><div class="sc-lbl">Clientes registrados</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+        <div class="table-wrap">
+          <div class="table-header"><div class="table-title">INGRESOS POR MES</div></div>
+          <div style="padding:20px">
+            <div class="chart-bar-row"><span class="chart-bar-label">Enero</span><div class="chart-bar-track"><div class="chart-bar-fill" style="width:40%"></div></div><span class="chart-bar-val">$24.2k</span></div>
+            <div class="chart-bar-row"><span class="chart-bar-label">Febrero</span><div class="chart-bar-track"><div class="chart-bar-fill" style="width:55%"></div></div><span class="chart-bar-val">$33.1k</span></div>
+            <div class="chart-bar-row"><span class="chart-bar-label">Marzo</span><div class="chart-bar-track"><div class="chart-bar-fill" style="width:65%"></div></div><span class="chart-bar-val">$39.4k</span></div>
+            <div class="chart-bar-row"><span class="chart-bar-label">Abril</span><div class="chart-bar-track"><div class="chart-bar-fill" style="width:72%"></div></div><span class="chart-bar-val">$43.8k</span></div>
+            <div class="chart-bar-row"><span class="chart-bar-label">Mayo</span><div class="chart-bar-track"><div class="chart-bar-fill" style="width:75%"></div></div><span class="chart-bar-val">$45.5k</span></div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-header"><div class="table-title">ALERTAS ACTIVAS</div></div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+            <div style="background:rgba(255,92,92,.08);border:1px solid rgba(255,92,92,.2);border-radius:10px;padding:14px;cursor:pointer" onclick="showTab('denuncias')">
+              <div style="font-weight:600;font-size:13px;color:var(--danger)">⚠️ 2 denuncias sin resolver</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Requieren revisión urgente</div>
+            </div>
+            <div style="background:rgba(240,192,64,.08);border:1px solid rgba(240,192,64,.2);border-radius:10px;padding:14px;cursor:pointer" onclick="showTab('postulaciones')">
+              <div style="font-weight:600;font-size:13px;color:var(--accent)">📄 3 postulaciones pendientes</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Nuevos asesores esperando aprobación</div>
+            </div>
+            <div style="background:rgba(92,159,255,.08);border:1px solid rgba(92,159,255,.2);border-radius:10px;padding:14px">
+              <div style="font-weight:600;font-size:13px;color:var(--info)">💰 $12.400 en pagos pendientes</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:3px">Transferencias a asesores por acreditar</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-bottom:20px">
+        <div class="table-header"><div class="table-title">ESPECIALIDADES MÁS PEDIDAS</div><button class="export-btn" onclick="alert('Exportando reporte...')">📊 Exportar PDF</button></div>
+        <div class="donut-wrap">
+          <div class="donut"></div>
+          <div class="donut-legend">
+            <div class="dl-item"><div class="dl-dot" style="background:var(--accent)"></div>Legal / Jurídica — 40%</div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--accent2)"></div>Finanzas — 30%</div>
+            <div class="dl-item"><div class="dl-dot" style="background:#5c9fff"></div>Coaching — 15%</div>
+            <div class="dl-item"><div class="dl-dot" style="background:var(--danger)"></div>Otros — 15%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header"><div class="table-title">ÚLTIMAS SESIONES</div><button class="btn-primary" onclick="showTab('sesiones')">Ver todas →</button></div>
+        <table>
+          <thead><tr><th>Cliente</th><th>Asesor</th><th>Fecha</th><th>Monto</th><th>Comisión</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>María González</td><td>Dra. Laura Méndez</td><td>22 may · 15:00</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$9.775</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$2.933</td><td><span class="status s-ok">CONFIRMADA</span></td></tr>
+            <tr><td>Juan Pérez</td><td>Ing. Pablo Romero</td><td>20 may · 11:00</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$11.700</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$3.510</td><td><span class="status s-ok">REALIZADA</span></td></tr>
+            <tr><td>Ana Ruiz</td><td>Psic. Sofía Ramos</td><td>18 may · 16:00</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$7.150</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$2.145</td><td><span class="status s-ok">REALIZADA</span></td></tr>
+            <tr><td>Carlos Vidal</td><td>Lic. Ana Torres</td><td>15 may · 10:00</td><td style="font-family:'DM Mono',monospace;color:var(--danger)">$8.450</td><td style="font-family:'DM Mono',monospace;color:var(--danger)">—</td><td><span class="status s-danger">CANCELADA</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ ASESORES ══ -->
+    <div class="tab-pane" id="tab-asesores">
+      <div class="sec-header">
+        <div class="sec-title">GESTIÓN DE ASESORES</div>
+        <div style="display:flex;gap:8px">
+          <button class="export-btn" onclick="alert('Exportando lista de asesores a Excel...')">📊 Exportar</button>
+          <button class="btn-primary" onclick="abrirModalAsesor()">+ Agregar asesor</button>
+        </div>
+      </div>
+      <div class="table-search">
+        <input class="ts-input" placeholder="🔍 Buscar asesor por nombre o especialidad..." oninput="filtrarTabla(this,'tablaAsesores')">
+        <select class="ts-select" onchange="filtrarEstado(this,'tablaAsesores')">
+          <option value="">Todos los estados</option>
+          <option value="ACTIVO">Activos</option>
+          <option value="SUSPENDIDO">Suspendidos</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table id="tablaAsesores">
+          <thead><tr><th>Asesor</th><th>Especialidad</th><th>Modalidad</th><th>Precio/ses.</th><th>Sesiones</th><th>Rating</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Dra. Laura Méndez</strong><br><span style="font-size:11px;color:var(--muted)">laura@asesoresya.com</span></td><td>Legal / Civil</td><td>📹 📍</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$8.500</td><td>24</td><td style="color:var(--accent)">★ 4.9</td><td><span class="status s-ok">ACTIVO</span></td><td><button class="btn-xs yellow" onclick="verAsesor('Laura')">Ver</button> <button class="btn-xs red" onclick="if(confirm('¿Suspender?'))alert('Asesor suspendido.')">Suspender</button></td></tr>
+            <tr><td><strong>Ing. Pablo Romero</strong><br><span style="font-size:11px;color:var(--muted)">pablo@fin.com</span></td><td>Finanzas</td><td>📹 📍</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$9.000</td><td>18</td><td style="color:var(--accent)">★ 4.7</td><td><span class="status s-ok">ACTIVO</span></td><td><button class="btn-xs yellow" onclick="verAsesor('Pablo')">Ver</button> <button class="btn-xs red" onclick="if(confirm('¿Suspender?'))alert('Asesor suspendido.')">Suspender</button></td></tr>
+            <tr><td><strong>Psic. Sofía Ramos</strong><br><span style="font-size:11px;color:var(--muted)">sofia@coaching.com</span></td><td>Coaching</td><td>📹 📍</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$5.500</td><td>31</td><td style="color:var(--accent)">★ 5.0</td><td><span class="status s-ok">ACTIVO</span></td><td><button class="btn-xs yellow">Ver</button> <button class="btn-xs red" onclick="if(confirm('¿Suspender?'))alert('Asesor suspendido.')">Suspender</button></td></tr>
+            <tr><td><strong>Lic. Ana Torres</strong><br><span style="font-size:11px;color:var(--muted)">ana@economia.com</span></td><td>Finanzas</td><td>📹</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$6.500</td><td>11</td><td style="color:var(--accent)">★ 4.3</td><td><span class="status s-pend">SUSPENDIDO</span></td><td><button class="btn-xs green" onclick="alert('Asesor reactivado.')">Reactivar</button> <button class="btn-xs red" onclick="if(confirm('¿Eliminar?'))alert('Eliminado.')">Eliminar</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ CLIENTES ══ -->
+    <div class="tab-pane" id="tab-clientes">
+      <div class="sec-header"><div class="sec-title">CLIENTES REGISTRADOS</div><span style="font-size:13px;color:var(--muted)">134 clientes en total</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Email</th><th>Sesiones</th><th>Total pagado</th><th>Última sesión</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody>
+            <tr><td><strong>María González</strong></td><td style="color:var(--muted);font-size:12px">maria@email.com</td><td>4</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$24.250</td><td>22 may 2025</td><td><span class="status s-ok">ACTIVO</span></td><td><button class="btn-xs yellow" onclick="verCliente('María')">Ver historial</button></td></tr>
+            <tr><td><strong>Juan Pérez</strong></td><td style="color:var(--muted);font-size:12px">juan@email.com</td><td>7</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$58.900</td><td>20 may 2025</td><td><span class="status s-ok">ACTIVO</span></td><td><button class="btn-xs yellow" onclick="verCliente('Juan')">Ver historial</button></td></tr>
+            <tr><td><strong>Ana Ruiz</strong></td><td style="color:var(--muted);font-size:12px">ana@email.com</td><td>2</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$14.300</td><td>18 may 2025</td><td><span class="status s-ok">ACTIVO</span></td><td><button class="btn-xs yellow" onclick="verCliente('Ana')">Ver historial</button></td></tr>
+            <tr><td><strong>Carlos Vidal</strong></td><td style="color:var(--muted);font-size:12px">carlos@email.com</td><td>1</td><td style="font-family:'DM Mono',monospace;color:var(--danger)">Reembolso</td><td>15 may 2025</td><td><span class="status s-danger">DENUNCIADO</span></td><td><button class="btn-xs red" onclick="if(confirm('¿Banear cliente?'))alert('Cliente baneado.')">Banear</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ SESIONES ══ -->
+    <div class="tab-pane" id="tab-sesiones">
+      <div class="sec-header"><div class="sec-title">TODAS LAS SESIONES</div>
+        <select style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none">
+          <option>Todas</option><option>Confirmadas</option><option>Realizadas</option><option>Canceladas</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Cliente</th><th>Asesor</th><th>Fecha</th><th>Modalidad</th><th>Honorario</th><th>Comisión 30%</th><th>Estado</th><th>Acción</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--muted);font-family:'DM Mono',monospace">#0047</td><td>María G.</td><td>Dra. Méndez</td><td>22 may · 15:00</td><td>📹 Zoom</td><td style="font-family:'DM Mono',monospace">$8.500</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$2.550</td><td><span class="status s-ok">CONFIRMADA</span></td><td><button class="btn-xs">Ver</button></td></tr>
+            <tr><td style="color:var(--muted);font-family:'DM Mono',monospace">#0046</td><td>Juan P.</td><td>Ing. Romero</td><td>20 may · 11:00</td><td>📍 Presencial</td><td style="font-family:'DM Mono',monospace">$9.000</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$2.700</td><td><span class="status s-ok">REALIZADA</span></td><td><button class="btn-xs">Ver</button></td></tr>
+            <tr><td style="color:var(--muted);font-family:'DM Mono',monospace">#0045</td><td>Ana R.</td><td>Psic. Ramos</td><td>18 may · 16:00</td><td>📹 Zoom</td><td style="font-family:'DM Mono',monospace">$5.500</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$1.650</td><td><span class="status s-ok">REALIZADA</span></td><td><button class="btn-xs">Ver</button></td></tr>
+            <tr><td style="color:var(--muted);font-family:'DM Mono',monospace">#0044</td><td>Carlos V.</td><td>Lic. Torres</td><td>15 may · 10:00</td><td>📹 Zoom</td><td style="font-family:'DM Mono',monospace">$6.500</td><td style="font-family:'DM Mono',monospace;color:var(--danger)">—</td><td><span class="status s-danger">CANCELADA</span></td><td><button class="btn-xs yellow" onclick="alert('Procesando reembolso...')">Reembolsar</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ FINANZAS ══ -->
+    <div class="tab-pane" id="tab-finanzas">
+      <div class="finance-big">
+        <div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--accent);letter-spacing:2px;margin-bottom:8px">GANANCIA NETA DE LA PLATAFORMA</div>
+        <div class="finance-num">$55.800</div>
+        <div class="finance-lbl">Comisiones del 30% acumuladas · Mayo 2025</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">
+        <div class="sc"><span class="sc-icon">💳</span><div class="sc-val y">$186k</div><div class="sc-lbl">Total cobrado a clientes</div></div>
+        <div class="sc"><span class="sc-icon">💸</span><div class="sc-val b">$130.2k</div><div class="sc-lbl">Transferido a asesores (70%)</div></div>
+        <div class="sc"><span class="sc-icon">↩️</span><div class="sc-val r">$18.4k</div><div class="sc-lbl">Total reembolsado</div></div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">PAGOS PENDIENTES A ASESORES</div>
+          <button class="btn-primary" onclick="alert('Procesando todas las transferencias...')">Pagar todos →</button>
+        </div>
+        <table>
+          <thead><tr><th>Asesor</th><th>Sesiones</th><th>Honorarios devengados</th><th>Ya transferido</th><th>Pendiente</th><th>Acción</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Dra. Laura Méndez</strong></td><td>24</td><td style="font-family:'DM Mono',monospace">$204.000</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$187.600</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$16.400</td><td><button class="btn-xs green" onclick="alert('Transferencia enviada a Dra. Méndez.')">Transferir</button></td></tr>
+            <tr><td><strong>Ing. Pablo Romero</strong></td><td>18</td><td style="font-family:'DM Mono',monospace">$162.000</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$155.400</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$6.600</td><td><button class="btn-xs green" onclick="alert('Transferencia enviada a Ing. Romero.')">Transferir</button></td></tr>
+            <tr><td><strong>Psic. Sofía Ramos</strong></td><td>31</td><td style="font-family:'DM Mono',monospace">$170.500</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$170.500</td><td style="font-family:'DM Mono',monospace;color:var(--muted)">$0</td><td><button class="btn-xs" disabled style="opacity:.4">Al día ✓</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ POSTULACIONES ══ -->
+    <div class="tab-pane" id="tab-postulaciones">
+      <div class="sec-header"><div class="sec-title">CURRÍCULUMS RECIBIDOS</div><span style="font-size:13px;color:var(--muted)">3 postulaciones pendientes de revisión</span></div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="card-title">Lic. Roberto Fernández</div>
+            <div class="card-meta">📧 roberto@abogado.com · 📍 Mendoza · Recibido: 10 mayo 2025</div>
+          </div>
+          <span class="status s-pend">PENDIENTE</span>
+        </div>
+        <div class="card-body">
+          <strong style="color:var(--text)">Especialidad:</strong> Derecho Laboral · <strong style="color:var(--text)">Modalidad:</strong> Videollamada y Presencial · <strong style="color:var(--text)">Precio propuesto:</strong> $7.000/sesión<br><br>
+          <strong style="color:var(--text)">Experiencia:</strong> 10 años como abogado laboral en estudios jurídicos de Mendoza. Especialización en despidos, ART y convenios colectivos. Universidad Nacional de Cuyo, egresado 2013.
+        </div>
+        <div class="card-actions">
+          <button class="btn-xs" onclick="verCV('Roberto')">📄 Ver CV completo</button>
+          <button class="btn-xs yellow" onclick="abrirEntrevista('Roberto Fernández','roberto@abogado.com')">📅 Programar entrevista</button>
+          <button class="btn-xs" style="border-color:rgba(92,159,255,.4);color:#5c9fff" onclick="abrirRenegociar('Roberto Fernández', 7000)">💬 Renegociar precio</button>
+          <button class="btn-xs green" onclick="aprobarAsesor('Roberto')">✅ Aprobar</button>
+          <button class="btn-xs red" onclick="rechazarAsesor('Roberto')">❌ Rechazar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="card-title">Dr. Martín Suárez</div>
+            <div class="card-meta">📧 martin@psico.com · 📍 Córdoba · Recibido: 8 mayo 2025</div>
+          </div>
+          <span class="status s-pend">PENDIENTE</span>
+        </div>
+        <div class="card-body">
+          <strong style="color:var(--text)">Especialidad:</strong> Psicología Clínica · <strong style="color:var(--text)">Modalidad:</strong> Videollamada · <strong style="color:var(--text)">Precio propuesto:</strong> $6.000/sesión<br><br>
+          <strong style="color:var(--text)">Experiencia:</strong> Psicólogo clínico con matrícula MN 67890. 7 años de consultoría privada. Especializado en ansiedad, burnout y terapia cognitivo-conductual. UNC 2016.
+        </div>
+        <div class="card-actions">
+          <button class="btn-xs" onclick="verCV('Martín')">📄 Ver CV completo</button>
+          <button class="btn-xs yellow" onclick="abrirEntrevista('Dr. Martín Suárez','martin@psico.com')">📅 Programar entrevista</button>
+          <button class="btn-xs" style="border-color:rgba(92,159,255,.4);color:#5c9fff" onclick="abrirRenegociar('Dr. Martín Suárez', 6000)">💬 Renegociar precio</button>
+          <button class="btn-xs green" onclick="aprobarAsesor('Martín')">✅ Aprobar</button>
+          <button class="btn-xs red" onclick="rechazarAsesor('Martín')">❌ Rechazar</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="card-title">Lic. Valentina Cruz</div>
+            <div class="card-meta">📧 valen@negocios.com · 📍 Buenos Aires · Recibido: 5 mayo 2025</div>
+          </div>
+          <span class="status s-pend">PENDIENTE</span>
+        </div>
+        <div class="card-body">
+          <strong style="color:var(--text)">Especialidad:</strong> Consultoría de Negocios · <strong style="color:var(--text)">Modalidad:</strong> Videollamada y Presencial · <strong style="color:var(--text)">Precio propuesto:</strong> $10.000/sesión<br><br>
+          <strong style="color:var(--text)">Experiencia:</strong> MBA por UTDT. 12 años en consultoría estratégica para PyMEs y startups. Ex directora de operaciones en empresa de tecnología. UADE 2010.
+        </div>
+        <div class="card-actions">
+          <button class="btn-xs" onclick="verCV('Valentina')">📄 Ver CV completo</button>
+          <button class="btn-xs yellow" onclick="abrirEntrevista('Lic. Valentina Cruz','valen@negocios.com')">📅 Programar entrevista</button>
+          <button class="btn-xs" style="border-color:rgba(92,159,255,.4);color:#5c9fff" onclick="abrirRenegociar('Lic. Valentina Cruz', 10000)">💬 Renegociar precio</button>
+          <button class="btn-xs green" onclick="aprobarAsesor('Valentina')">✅ Aprobar</button>
+          <button class="btn-xs red" onclick="rechazarAsesor('Valentina')">❌ Rechazar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ REEMBOLSOS ══ -->
+    <div class="tab-pane" id="tab-reembolsos">
+      <div class="sec-header"><div class="sec-title">REEMBOLSOS PENDIENTES</div><span style="font-size:13px;color:var(--accent)">1 pendiente de acción</span></div>
+      <div style="background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:14px;padding:20px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+          <div>
+            <div style="font-weight:700;font-size:15px;margin-bottom:2px">María González</div>
+            <div style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Sesión #0044 · Lic. Torres · 15 mayo 2025</div>
+          </div>
+          <span class="status s-pend">PENDIENTE DE REEMBOLSO</span>
+        </div>
+        <div style="background:var(--surface);border:1px solid rgba(61,224,160,.2);border-radius:10px;padding:14px;margin-bottom:14px">
+          <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--accent2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">💳 Datos bancarios del cliente</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);letter-spacing:1px">CBU/Alias: <span style="color:var(--accent2);font-family:'DM Mono',monospace">cliente.alias.mp</span></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Monto a reembolsar: <strong style="color:var(--accent);font-family:'DM Mono',monospace">$10.350</strong></div>
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Motivo: El asesor no se conectó a la sesión pactada.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-primary" onclick="abrirModalReembolso('María González','$10.350')">✅ Cliente Reembolsado</button>
+          <button class="btn-xs" onclick="alert('Contactando al cliente por email...')">📧 Contactar cliente</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DENUNCIAS ══ -->
+    <div class="tab-pane" id="tab-denuncias">
+      <div class="sec-header"><div class="sec-title">DENUNCIAS Y REPORTES</div><span style="font-size:13px;color:var(--danger)">2 denuncias activas</span></div>
+
+      <div class="card" style="border-color:rgba(255,92,92,.2)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="card-title" style="color:var(--danger)">🚨 Denuncia contra Lic. Ana Torres</div>
+            <div class="card-meta">Denunciante: Carlos Vidal (cliente) · 15 mayo 2025</div>
+          </div>
+          <span class="status s-danger">SIN RESOLVER</span>
+        </div>
+        <div class="card-body">
+          <strong style="color:var(--text)">Motivo:</strong> No cumplió con la sesión<br>
+          <strong style="color:var(--text)">Descripción:</strong> La asesora no se conectó a la videollamada en el horario acordado y no respondió mensajes. El cliente perdió tiempo y quiere su dinero de vuelta. Es la segunda vez que ocurre según registros.
+        </div>
+        <div class="card-actions">
+          <button class="btn-xs yellow" onclick="verCliente('Carlos')">👤 Ver cliente</button>
+          <button class="btn-xs yellow" onclick="verAsesor('Ana')">🎓 Ver asesor</button>
+          <button class="btn-xs green" onclick="alert('Reembolso procesado. Asesor notificado.')">💰 Reembolsar cliente</button>
+          <button class="btn-xs red" onclick="if(confirm('¿Suspender a Lic. Torres?'))alert('Asesor suspendido.')">🚫 Suspender asesor</button>
+          <button class="btn-xs" onclick="alert('Denuncia marcada como resuelta.')">✅ Marcar resuelta</button>
+        </div>
+      </div>
+
+      <div class="card" style="border-color:rgba(255,92,92,.2)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+          <div>
+            <div class="card-title" style="color:var(--danger)">🚨 Denuncia contra Carlos Vidal</div>
+            <div class="card-meta">Denunciante: Dra. Laura Méndez (asesora) · 12 mayo 2025</div>
+          </div>
+          <span class="status s-danger">SIN RESOLVER</span>
+        </div>
+        <div class="card-body">
+          <strong style="color:var(--text)">Motivo:</strong> Comportamiento inapropiado<br>
+          <strong style="color:var(--text)">Descripción:</strong> El cliente hizo preguntas fuera del alcance acordado y se puso agresivo cuando la asesora le aclaró los límites de la consulta. Usó lenguaje ofensivo durante la sesión de Zoom.
+        </div>
+        <div class="card-actions">
+          <button class="btn-xs yellow" onclick="verCliente('Carlos')">👤 Ver cliente</button>
+          <button class="btn-xs red" onclick="if(confirm('¿Banear a Carlos Vidal?'))alert('Cliente baneado de la plataforma.')">🚫 Banear cliente</button>
+          <button class="btn-xs" onclick="alert('Denuncia marcada como resuelta.')">✅ Marcar resuelta</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RESEÑAS ══ -->
+    <div class="tab-pane" id="tab-resenas">
+      <div class="sec-header"><div class="sec-title">MODERACIÓN DE RESEÑAS</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Asesor calificado</th><th>Estrellas</th><th>Comentario</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
+          <tbody>
+            <tr><td>María G.</td><td>Dra. Méndez</td><td style="color:var(--accent)">★★★★★</td><td style="font-size:12px;color:var(--muted);max-width:200px">Excelente profesional. Muy clara y detallista...</td><td>8 may</td><td><span class="status s-ok">PUBLICADA</span></td><td><button class="btn-xs red" onclick="if(confirm('¿Eliminar reseña?'))alert('Reseña eliminada.')">Eliminar</button></td></tr>
+            <tr><td>Juan P.</td><td>Ing. Romero</td><td style="color:var(--accent)">★★★★☆</td><td style="font-size:12px;color:var(--muted);max-width:200px">Muy buen asesor, un poco tarde pero resolvió todo...</td><td>21 may</td><td><span class="status s-pend">PENDIENTE</span></td><td><button class="btn-xs green" onclick="alert('Reseña aprobada y publicada.')">Aprobar</button> <button class="btn-xs red" onclick="alert('Reseña rechazada.')">Rechazar</button></td></tr>
+            <tr><td>Anónimo</td><td>Lic. Torres</td><td style="color:var(--danger)">★☆☆☆☆</td><td style="font-size:12px;color:var(--muted);max-width:200px">No se conectó, perdí mi tiempo y mi plata...</td><td>16 may</td><td><span class="status s-pend">PENDIENTE</span></td><td><button class="btn-xs green" onclick="alert('Reseña aprobada y publicada.')">Aprobar</button> <button class="btn-xs red" onclick="alert('Reseña rechazada.')">Rechazar</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ RENDIMIENTO ══ -->
+    <div class="tab-pane" id="tab-rendimiento">
+      <div class="sec-header"><div class="sec-title">MONITOREO DE RENDIMIENTO</div><button class="export-btn" onclick="alert('Exportando reporte...')">📊 Exportar PDF</button></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+        <div class="sc"><span class="sc-icon">💰</span><div class="sc-val y">$55.8k</div><div class="sc-lbl">Ganancia plataforma (30%)</div></div>
+        <div class="sc"><span class="sc-icon">📈</span><div class="sc-val g">$130.2k</div><div class="sc-lbl">Pagado a asesores (70%)</div></div>
+        <div class="sc"><span class="sc-icon">⭐</span><div class="sc-val y">4.7</div><div class="sc-lbl">Rating promedio plataforma</div></div>
+        <div class="sc"><span class="sc-icon">🔄</span><div class="sc-val b">94%</div><div class="sc-lbl">Tasa de completadas</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <div class="table-wrap">
+          <div class="tw-header"><div class="tw-title">TOP ASESORES POR INGRESOS</div></div>
+          <table><thead><tr><th>Asesor</th><th>Sesiones</th><th>Ingreso total</th><th>Comisión 30%</th></tr></thead>
+          <tbody>
+            <tr><td>Dra. Méndez</td><td>24</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$204k</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$61.2k</td></tr>
+            <tr><td>Psic. Ramos</td><td>31</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$170.5k</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$51.2k</td></tr>
+            <tr><td>Ing. Romero</td><td>18</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$162k</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$48.6k</td></tr>
+          </tbody></table>
+        </div>
+        <div class="table-wrap">
+          <div class="tw-header"><div class="tw-title">RENDIMIENTO POR ESPECIALIDAD</div></div>
+          <table><thead><tr><th>Área</th><th>Sesiones</th><th>% del total</th><th>Ingreso</th></tr></thead>
+          <tbody>
+            <tr><td>⚖️ Legal</td><td>89</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">40%</td><td style="font-family:'DM Mono',monospace">$89k</td></tr>
+            <tr><td>📈 Finanzas</td><td>67</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">30%</td><td style="font-family:'DM Mono',monospace">$67k</td></tr>
+            <tr><td>🧠 Coaching</td><td>44</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">20%</td><td style="font-family:'DM Mono',monospace">$44k</td></tr>
+            <tr><td>💬 Otros</td><td>22</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">10%</td><td style="font-family:'DM Mono',monospace">$22k</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="tw-header"><div class="tw-title">REEMBOLSOS Y PENALIZACIONES</div></div>
+        <table><thead><tr><th>Tipo</th><th>Cantidad</th><th>Monto total</th><th>% del total cobrado</th></tr></thead>
+        <tbody>
+          <tr><td>Asesor ausente</td><td>3</td><td style="font-family:'DM Mono',monospace;color:var(--danger)">$18.4k</td><td style="color:var(--danger)">9.8%</td></tr>
+          <tr><td>Cliente canceló &gt;24hs</td><td>2</td><td style="font-family:'DM Mono',monospace;color:var(--accent2)">$12.1k</td><td style="color:var(--accent2)">6.5%</td></tr>
+          <tr><td>Problemas técnicos</td><td>1</td><td style="font-family:'DM Mono',monospace;color:var(--muted)">$5.5k</td><td style="color:var(--muted)">2.9%</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- ══ CONTRATOS Y RECIBOS ══ -->
+    <div class="tab-pane" id="tab-contratos">
+      <div class="sec-header"><div class="sec-title">CONTRATOS Y RECIBOS</div><button class="btn-primary" onclick="generarContrato()">+ Generar contrato</button></div>
+      <div style="background:rgba(61,224,160,.06);border:1px solid rgba(61,224,160,.2);border-radius:14px;padding:18px;margin-bottom:16px">
+        <div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--accent2);letter-spacing:1px;margin-bottom:12px;text-transform:uppercase">ℹ️ Cómo funcionan los contratos</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8">
+          Cada sesión pagada genera automáticamente un <strong style="color:var(--text)">recibo de pago</strong> y un <strong style="color:var(--text)">contrato de prestación de servicios</strong> entre el cliente y el asesor. 
+          AsesoresYa firma como testigo intermediario. Los documentos quedan disponibles para descargar desde el panel de cada usuario.
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="tw-header"><div class="tw-title">DOCUMENTOS GENERADOS</div><button class="export-btn" onclick="alert('Exportando todos los contratos...')">📥 Exportar todo</button></div>
+        <table><thead><tr><th>Fecha</th><th>Cliente</th><th>Asesor</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Acción</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--muted)">22 may</td><td>María G.</td><td>Dra. Méndez</td><td>Contrato + Recibo</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$8.500</td><td><span class="status s-ok">FIRMADO</span></td><td><button class="btn-xs g" onclick="verContrato('María G.','Dra. Méndez')">📄 Ver</button></td></tr>
+          <tr><td style="color:var(--muted)">15 may</td><td>Juan P.</td><td>Ing. Romero</td><td>Contrato + Recibo</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$9.000</td><td><span class="status s-ok">FIRMADO</span></td><td><button class="btn-xs g" onclick="verContrato('Juan P.','Ing. Romero')">📄 Ver</button></td></tr>
+          <tr><td style="color:var(--muted)">8 may</td><td>Ana R.</td><td>Psic. Ramos</td><td>Contrato + Recibo</td><td style="font-family:'DM Mono',monospace;color:var(--accent)">$5.500</td><td><span class="status s-ok">FIRMADO</span></td><td><button class="btn-xs g" onclick="verContrato('Ana R.','Psic. Ramos')">📄 Ver</button></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+  </div><!-- /tab-content -->
+</div><!-- /dashboard -->
+
+<!-- ══ MODAL AGREGAR ASESOR ══ -->
+<div class="modal-overlay" id="modalAsesor" onclick="if(event.target===this)this.classList.remove('active')">
+<div class="modal">
+  <button class="modal-close" onclick="document.getElementById('modalAsesor').classList.remove('active')">✕</button>
+  <h3>AGREGAR<br>ASESOR</h3>
+  <p class="modal-sub">Completá los datos para agregar un nuevo asesor a la plataforma.</p>
+  <div class="two-col">
+    <div class="field"><label>Nombre completo</label><input type="text" placeholder="Ej: Dra. Ana López"></div>
+    <div class="field"><label>Email</label><input type="email" placeholder="asesor@email.com"></div>
+  </div>
+  <div class="two-col">
+    <div class="field"><label>Especialidad</label>
+      <select><option>Legal / Jurídica</option><option>Finanzas</option><option>Coaching</option><option>Negocios</option><option>Tecnología</option><option>Otro</option></select>
+    </div>
+    <div class="field"><label>Precio por sesión ($)</label><input type="text" placeholder="8500"></div>
+  </div>
+  <div class="field"><label>Modalidad</label>
+    <div style="display:flex;gap:8px">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer"><input type="checkbox" checked> 📹 Videollamada</label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer"><input type="checkbox"> 📍 Presencial</label>
+    </div>
+  </div>
+  <div class="field"><label>Link de Zoom personal</label><input type="text" placeholder="https://zoom.us/j/..."></div>
+  <div class="field"><label>Bio / Descripción</label><textarea placeholder="Experiencia, especialización, años de trayectoria..."></textarea></div>
+  <button class="btn-primary" style="width:100%;padding:14px" onclick="document.getElementById('modalAsesor').classList.remove('active');alert('✅ Asesor agregado a la plataforma.')">Agregar asesor →</button>
+</div>
+</div>
+
+<!-- ══ MODAL VER ASESOR ══ -->
+<div class="modal-overlay" id="modalVerAsesor" onclick="if(event.target===this)this.classList.remove('active')">
+<div class="modal"><button class="modal-close" onclick="document.getElementById('modalVerAsesor').classList.remove('active')">✕</button><div id="verAsesorBody"></div></div>
+</div>
+
+<!-- ══ MODAL VER CLIENTE ══ -->
+<div class="modal-overlay" id="modalVerCliente" onclick="if(event.target===this)this.classList.remove('active')">
+<div class="modal"><button class="modal-close" onclick="document.getElementById('modalVerCliente').classList.remove('active')">✕</button><div id="verClienteBody"></div></div>
+</div>
+
+<script>
+// ── CREDENCIALES ADMIN ──
+// Cambiá estos valores por los tuyos
+const ADMIN_EMAIL = 'admin@gmail.com';
+const ADMIN_PASS  = 'admin123';
+const ADMIN_CODE  = 'ASESORESYA2025';
+
+function intentarLogin(){
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  const code  = document.getElementById('adminCodigo').value.trim().toUpperCase();
+  const err   = document.getElementById('loginError');
+
+  if(email === ADMIN_EMAIL && pass === ADMIN_PASS && code === ADMIN_CODE){
+    err.style.display='none';
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('dashboard').classList.add('active');
+    document.getElementById('adminNameShow').textContent = email;
+  } else {
+    err.style.display='block';
+    document.getElementById('adminPass').value='';
+    document.getElementById('adminCodigo').value='';
+  }
+}
+
+// Enter para login
+document.addEventListener('keydown', e => {
+  if(e.key==='Enter' && document.getElementById('loginScreen').style.display !== 'none'){
+    intentarLogin();
+  }
+});
+
+function cerrarSesion(){
+  if(confirm('¿Cerrar sesión del panel admin?')){
+    sessionStorage.clear();
+    localStorage.removeItem('admin_token');
+    window.location.replace('index.html');
+  }
+}
+
+// ── TABS ──
+function showTab(id){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+// ── MODAL ASESOR ──
+function abrirModalAsesor(){document.getElementById('modalAsesor').classList.add('active')}
+
+function verAsesor(nombre){
+  const data={
+    Laura:{nombre:'Dra. Laura Méndez',email:'laura@asesoresya.com',esp:'Legal / Civil',precio:'$8.500',sesiones:24,rating:'4.9',estado:'ACTIVO'},
+    Pablo:{nombre:'Ing. Pablo Romero',email:'pablo@fin.com',esp:'Finanzas',precio:'$9.000',sesiones:18,rating:'4.7',estado:'ACTIVO'},
+    Ana:{nombre:'Lic. Ana Torres',email:'ana@economia.com',esp:'Finanzas',precio:'$6.500',sesiones:11,rating:'4.3',estado:'SUSPENDIDO'},
+  };
+  const d=data[nombre]||{nombre:nombre,email:'—',esp:'—',precio:'—',sesiones:0,rating:'—',estado:'—'};
+  // Sanitizar datos antes de insertar en DOM
+  const san = s => s ? s.replace(/</g,'&lt;').replace(/>/g,'&gt;') : '—';
+  document.getElementById('verAsesorBody').innerHTML=`
+    <h3>${d.nombre}</h3>
+    <p class="modal-sub">${d.email}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Especialidad</div><div style="font-weight:600">${d.esp}</div></div>
+      <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Precio</div><div style="font-weight:600;color:var(--accent);font-family:'DM Mono',monospace">${d.precio}</div></div>
+      <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Sesiones</div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent)">${d.sesiones}</div></div>
+      <div style="background:var(--surface2);border-radius:10px;padding:14px"><div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Rating</div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent)">★ ${d.rating}</div></div>
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="document.getElementById('modalVerAsesor').classList.remove('active')">Cerrar</button>
+  `;
+  document.getElementById('modalVerAsesor').classList.add('active');
+}
+
+function verCliente(nombre){
+  document.getElementById('verClienteBody').innerHTML=`
+    <h3>${nombre}</h3>
+    <p class="modal-sub">Historial completo del cliente</p>
+    <div style="background:var(--surface2);border-radius:12px;padding:16px;margin-bottom:16px;font-size:13px;line-height:2">
+      <div>📅 <strong>Sesiones totales:</strong> 4</div>
+      <div>💰 <strong>Total pagado:</strong> <span style="color:var(--accent);font-family:'DM Mono',monospace">$24.250</span></div>
+      <div>⭐ <strong>Reseñas dejadas:</strong> 1</div>
+      <div>🚨 <strong>Denuncias recibidas:</strong> 1</div>
+      <div>📍 <strong>Zona:</strong> Palermo, Buenos Aires</div>
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="document.getElementById('modalVerCliente').classList.remove('active')">Cerrar</button>
+  `;
+  document.getElementById('modalVerCliente').classList.add('active');
+}
+
+// ── POSTULACIONES ──
+function verCV(nombre){ alert(`Abriendo CV de ${nombre}...\n(En producción esto abre el PDF adjunto del postulante.)`) }
+function aprobarAsesor(nombre){
+  if(confirm(`¿Aprobar a ${nombre} como asesor de la plataforma?`)){
+    alert(`✅ ${nombre} fue aprobado. Recibirá un email con sus credenciales.`);
+    event.currentTarget.closest('.card').style.opacity='.4';
+    event.currentTarget.closest('.card').querySelector('.status').textContent='✅ APROBADO';
+  }
+}
+function rechazarAsesor(nombre){
+  if(confirm(`¿Rechazar la postulación de ${nombre}?`)){
+    alert(`❌ Postulación de ${nombre} rechazada. Recibirá un email de notificación.`);
+    event.currentTarget.closest('.card').style.opacity='.4';
+  }
+}
+
+let renegData = {};
+function abrirRenegociar(nombre, precioActual){
+  renegData = { nombre, precioOriginal: precioActual, contraoferta: null };
+  document.getElementById('renegNombre').textContent = nombre;
+  document.getElementById('renegPrecioActual').textContent = '$' + Math.round(precioActual).toLocaleString('es-AR');
+  document.getElementById('renegNuevoPrecio').value = '';
+  document.getElementById('renegArgumento').value = '';
+  // Historial
+  document.getElementById('renegHistOriginal').textContent = '$' + Math.round(precioActual).toLocaleString('es-AR');
+  document.getElementById('renegHistContra').textContent = 'Sin contraoferta aún';
+  document.getElementById('renegHistFinal').textContent = 'Pendiente';
+  document.getElementById('modalRenegociar').classList.add('active');
+}
+
+function enviarContraoferta(){
+  const nuevo = document.getElementById('renegNuevoPrecio').value.trim();
+  const arg   = document.getElementById('renegArgumento').value.trim();
+  if(!nuevo){ alert('Ingresá el nuevo monto.'); return; }
+  if(!arg){ alert('Escribí un argumento para el asesor.'); return; }
+  document.getElementById('modalRenegociar').classList.remove('active');
+  setTimeout(()=>alert(`✅ Contraoferta enviada.
+
+El asesor recibirá un email con el nuevo monto propuesto ($${Number(nuevo).toLocaleString('es-AR')}) y tu argumento. Si acepta, quedará aprobado con ese precio.`), 200);
+}
+
+// FILTROS DE TABLA
+function filtrarTabla(input, tablaId){
+  const q = input.value.toLowerCase();
+  const tabla = document.getElementById(tablaId);
+  if(!tabla) return;
+  tabla.querySelectorAll('tbody tr').forEach(tr => {
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+function filtrarEstado(select, tablaId){
+  const val = select.value;
+  const tabla = document.getElementById(tablaId);
+  if(!tabla) return;
+  tabla.querySelectorAll('tbody tr').forEach(tr => {
+    tr.style.display = (!val || tr.textContent.includes(val)) ? '' : 'none';
+  });
+}
+
+function abrirEntrevista(nombre, email){
+  document.getElementById('entNombre').textContent = nombre;
+  document.getElementById('entEmail').textContent = email;
+  const hoy=new Date(), max=new Date();
+  max.setDate(hoy.getDate()+14);
+  document.getElementById('entFecha').min = hoy.toISOString().split('T')[0];
+  document.getElementById('entFecha').max = max.toISOString().split('T')[0];
+  document.getElementById('entFecha').value = new Date(Date.now()+3*86400000).toISOString().split('T')[0];
+  document.getElementById('modalEntrevista').classList.add('active');
+}
+
+function enviarEntrevista(){
+  const fecha = document.getElementById('entFecha').value;
+  const hora  = document.getElementById('entHora').value;
+  const mod   = document.getElementById('entMod').value;
+  const zoom  = document.getElementById('entZoom').value;
+  const dir   = document.getElementById('entDir').value;
+  if(!fecha||!hora){alert('Seleccioná fecha y hora.');return}
+  document.getElementById('modalEntrevista').classList.remove('active');
+  setTimeout(()=>alert('✅ Entrevista programada. El postulante recibirá el email con los datos de la entrevista.'),200);
+}
+</script>
+
+<!-- MODAL ENTREVISTA -->
+<div class="modal-overlay" id="modalEntrevista" onclick="if(event.target===this)this.classList.remove('active')" style="z-index:9999">
+<div class="modal">
+  <button class="modal-close" onclick="document.getElementById('modalEntrevista').classList.remove('active')">✕</button>
+  <h3>PROGRAMAR<br>ENTREVISTA</h3>
+  <p class="modal-sub">Para: <strong id="entNombre" style="color:var(--text)"></strong> · <span id="entEmail" style="color:var(--muted)"></span></p>
+
+  <div style="background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.2);border-radius:12px;padding:14px;margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.6">
+    📋 El postulante recibirá un <strong style="color:var(--text)">email automático</strong> con el día, hora y modalidad de la entrevista. Si es Zoom, recibirá el link directo.
+  </div>
+
+  <div class="field"><label>Modalidad de entrevista</label>
+    <select id="entMod" onchange="toggleEntMod(this.value)" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:13px 16px;outline:none;appearance:none">
+      <option value="zoom">📹 Videollamada (Zoom)</option>
+      <option value="presencial">📍 Presencial</option>
+    </select>
+  </div>
+
+  <div class="two-col">
+    <div class="field"><label>Fecha</label><input type="date" id="entFecha"></div>
+    <div class="field"><label>Hora</label><input type="time" id="entHora" value="10:00"></div>
+  </div>
+
+  <div id="entZoomField" class="field"><label>Tu link de Zoom</label><input type="text" id="entZoom" placeholder="https://zoom.us/j/..." value="https://zoom.us/j/12345678901"></div>
+  <div id="entDirField" class="field hidden"><label>Dirección del encuentro</label><input type="text" id="entDir" placeholder="Ej: Av. Mitre 500, Mendoza"></div>
+
+  <div class="field"><label>Nota adicional (opcional)</label><textarea placeholder="Ej: Traé tu CV impreso, llegá 5 minutos antes..." style="min-height:70px;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:13px 16px;outline:none;resize:none"></textarea></div>
+
+  <button class="btn-primary" style="width:100%;padding:15px;font-size:15px" onclick="enviarEntrevista()">Enviar convocatoria →</button>
+</div>
+</div>
+
+<script>
+function toggleEntMod(val){
+  document.getElementById('entZoomField').classList.toggle('hidden', val==='presencial');
+  document.getElementById('entDirField').classList.toggle('hidden', val==='zoom');
+}
+
+// REEMBOLSO
+function abrirModalReembolso(cliente, monto){
+  document.getElementById('reembolsoCliente').textContent = cliente;
+  document.getElementById('reembolsoMonto').textContent = monto;
+  document.getElementById('comprobanteReembolso').value = '';
+  document.getElementById('modalReembolso').classList.add('active');
+}
+
+function confirmarReembolso(){
+  const comp = document.getElementById('comprobanteReembolso').value.trim();
+  if(!comp){ alert('Ingresá el número de comprobante o ID de la transferencia.'); return; }
+  document.getElementById('modalReembolso').classList.remove('active');
+  setTimeout(()=>alert('✅ Reembolso registrado.
+
+Se notificó al cliente que su dinero fue devuelto.
+Comprobante: ' + comp + '
+
+El estado de la sesión cambió a "Reembolsado".'),200);
+}
+
+// CONTRATOS
+function verContrato(cliente, asesor){
+  alert('📄 Contrato de prestación de servicios
+
+Cliente: ' + cliente + '
+Asesor: ' + asesor + '
+
+En producción esto abre un PDF firmado digitalmente con todos los datos de la sesión, el monto pagado y la firma de ambas partes.');
+}
+
+function generarContrato(){
+  alert('+ Generar contrato manual
+
+En producción esto genera un PDF de contrato para sesiones que no pasaron por el flujo normal.');
+}
+</script>
+
+<!-- MODAL REEMBOLSO -->
+<div class="modal-overlay" id="modalReembolso" onclick="if(event.target===this)this.classList.remove('active')" style="z-index:9999">
+<div class="modal" style="max-width:480px">
+  <button class="modal-close" onclick="document.getElementById('modalReembolso').classList.remove('active')">✕</button>
+  <h3>✅ REGISTRAR<br>REEMBOLSO</h3>
+  <p class="modal-sub">Cliente: <strong id="reembolsoCliente" style="color:var(--text)"></strong> · Monto: <strong id="reembolsoMonto" style="color:var(--accent2)"></strong></p>
+  <div style="background:rgba(61,224,160,.06);border:1px solid rgba(61,224,160,.2);border-radius:12px;padding:16px;margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.7">
+    📋 Ingresá el comprobante de la transferencia que <strong style="color:var(--text)">ya realizaste manualmente</strong> desde tu cuenta bancaria. Esto registra el reembolso en el sistema y notifica al cliente.
+  </div>
+  <div class="field" style="margin-bottom:20px">
+    <label>Número de operación / Comprobante de transferencia <span style="color:var(--danger)">*</span></label>
+    <input type="text" id="comprobanteReembolso" placeholder="Ej: OP-2025-0047821 o ID de Mercado Pago" style="font-family:'DM Mono',monospace;font-size:14px">
+  </div>
+  <div style="background:rgba(255,92,92,.06);border:1px solid rgba(255,92,92,.2);border-radius:10px;padding:12px;font-size:12px;color:var(--muted);margin-bottom:18px">
+    ⚠️ Al confirmar, el sistema cambia el estado de la sesión a <strong style="color:var(--accent2)">"Reembolsado"</strong> y le envía una notificación al cliente con el número de comprobante.
+  </div>
+  <div style="display:flex;gap:10px">
+    <button class="btn-danger" style="flex:1;padding:14px;border-radius:12px" onclick="document.getElementById('modalReembolso').classList.remove('active')">Cancelar</button>
+    <button class="btn-primary" style="flex:2;padding:14px;border-radius:12px;background:var(--accent2);color:#0a0a0f" onclick="confirmarReembolso()">✅ Confirmar reembolso →</button>
+  </div>
+</div>
+</div>
+
+<!-- MODAL RENEGOCIAR PRECIO -->
+<div class="modal-overlay" id="modalRenegociar" onclick="if(event.target===this)this.classList.remove('active')" style="z-index:9999">
+<div class="modal">
+  <button class="modal-close" onclick="document.getElementById('modalRenegociar').classList.remove('active')">✕</button>
+  <h3>💬 RENEGOCIAR<br>PRECIO</h3>
+  <p class="modal-sub">Asesor: <strong id="renegNombre" style="color:var(--text)"></strong></p>
+
+  <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+    <div>
+      <div style="font-size:11px;color:var(--muted);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Precio propuesto por el asesor</div>
+      <div style="font-family:Bebas Neue,sans-serif;font-size:28px;color:var(--danger)" id="renegPrecioActual">$0</div>
+    </div>
+    <div style="font-size:24px">→</div>
+    <div>
+      <div style="font-size:11px;color:var(--muted);font-family:DM Mono,monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Tu nueva propuesta</div>
+      <div style="font-family:Bebas Neue,sans-serif;font-size:28px;color:var(--accent2)">¿?</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Nuevo precio que proponés ($)</label>
+    <input type="text" id="renegNuevoPrecio" placeholder="Ej: 6000" style="font-size:18px;font-family:DM Mono,monospace;color:var(--accent2)">
+  </div>
+
+  <div class="field">
+    <label>Tu argumento para el asesor</label>
+    <textarea id="renegArgumento" placeholder="Ej: El precio propuesto está por encima del promedio de la plataforma para tu especialidad. Te ofrecemos $6.000 por sesión que está en línea con asesores de perfil similar..." style="min-height:110px;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:DM Sans,sans-serif;font-size:14px;padding:14px 16px;outline:none;resize:none"></textarea>
+  </div>
+
+  <div style="background:rgba(92,159,255,.06);border:1px solid rgba(92,159,255,.2);border-radius:10px;padding:12px;font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6">
+    📧 El asesor recibirá un email con tu contraoferta y argumento. Si acepta el nuevo precio, quedará aprobado automáticamente. Si rechaza, podés aprobar el precio original o rechazar la postulación.
+  </div>
+
+  <!-- Historial de precios -->
+  <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--muted)">
+    <div style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">Historial de precios</div>
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <div>📌 Precio original pedido: <strong style="color:var(--text);font-family:DM Mono,monospace" id="renegHistOriginal">—</strong></div>
+      <div>💬 Tu contraoferta: <strong style="color:var(--accent);font-family:DM Mono,monospace" id="renegHistContra">Sin contraoferta aún</strong></div>
+      <div>✅ Precio final aprobado: <strong style="color:var(--accent2);font-family:DM Mono,monospace" id="renegHistFinal">Pendiente</strong></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px">
+    <button class="btn-danger" style="flex:1;padding:14px;font-size:14px;border-radius:12px" onclick="document.getElementById('modalRenegociar').classList.remove('active')">Cancelar</button>
+    <button class="btn-primary" style="flex:2;padding:14px;font-size:14px;border-radius:12px" onclick="enviarContraoferta()">Enviar contraoferta →</button>
+  </div>
+</div>
+</div>
+
+</body>
+</html>

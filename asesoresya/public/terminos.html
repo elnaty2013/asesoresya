@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AsesoresYa — Términos y Condiciones</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c27;--border:rgba(255,255,255,0.07);--accent:#f0c040;--accent2:#3de0a0;--danger:#ff5c5c;--text:#f0efe8;--muted:#6a6a7a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;min-height:100vh}
+nav{display:flex;align-items:center;justify-content:space-between;padding:20px 48px;border-bottom:1px solid var(--border);background:rgba(10,10,15,.9);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
+.logo{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:2px;color:var(--accent);text-decoration:none}
+.logo span{color:var(--text)}
+.back{color:var(--muted);font-size:13px;text-decoration:none;border:1px solid var(--border);padding:8px 16px;border-radius:100px;transition:all .2s}
+.back:hover{border-color:var(--accent);color:var(--accent)}
+.hero{text-align:center;padding:56px 48px 40px;max-width:800px;margin:0 auto}
+.hero h1{font-family:"Bebas Neue",sans-serif;font-size:clamp(40px,6vw,72px);letter-spacing:1px;margin-bottom:12px}
+.hero h1 .y{color:var(--accent)}
+.hero p{font-size:14px;color:var(--muted);line-height:1.7}
+.last-update{display:inline-flex;align-items:center;gap:6px;font-family:"DM Mono",monospace;font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:5px 12px;border-radius:8px;margin-top:16px}
+.layout{display:grid;grid-template-columns:240px 1fr;gap:40px;max-width:1100px;margin:0 auto;padding:0 48px 80px;align-items:start}
+.index-sidebar{position:sticky;top:100px}
+.index-title{font-family:"DM Mono",monospace;font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.index-link{display:block;font-size:12px;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:8px;transition:all .2s;border-left:2px solid transparent;margin-bottom:2px}
+.index-link:hover{color:var(--text);background:var(--surface);border-left-color:var(--border)}
+.index-link.active{color:var(--accent);background:rgba(240,192,64,.06);border-left-color:var(--accent)}
+.tc-section{margin-bottom:48px;scroll-margin-top:120px}
+.tc-num{font-family:"DM Mono",monospace;font-size:11px;color:var(--accent);letter-spacing:1px;margin-bottom:8px}
+.tc-title{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.tc-body{font-size:14px;color:var(--muted);line-height:1.9}
+.tc-body p{margin-bottom:14px}
+.tc-body strong{color:var(--text);font-weight:600}
+.tc-body ul{padding-left:0;list-style:none;margin-bottom:14px}
+.tc-body ul li{padding:6px 0 6px 20px;position:relative;border-bottom:1px solid rgba(255,255,255,.04)}
+.tc-body ul li:last-child{border-bottom:none}
+.tc-body ul li::before{content:"→";position:absolute;left:0;color:var(--accent);font-size:12px}
+.abox{border-radius:14px;padding:18px 20px;margin-bottom:18px}
+.abox.y{background:rgba(240,192,64,.07);border:1px solid rgba(240,192,64,.2)}
+.abox.g{background:rgba(61,224,160,.07);border:1px solid rgba(61,224,160,.2)}
+.abox.r{background:rgba(255,92,92,.07);border:1px solid rgba(255,92,92,.2)}
+.abox.b{background:rgba(92,159,255,.07);border:1px solid rgba(92,159,255,.2)}
+.abox-t{font-weight:700;font-size:14px;margin-bottom:8px}
+.abox-t.y{color:var(--accent)}.abox-t.g{color:var(--accent2)}.abox-t.r{color:var(--danger)}.abox-t.b{color:#5c9fff}
+.abox-b{font-size:13px;color:var(--muted);line-height:1.8}
+.tc-table{width:100%;border-collapse:collapse;margin-bottom:18px;font-size:13px}
+.tc-table th{padding:10px 14px;text-align:left;font-size:10px;font-family:"DM Mono",monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);background:var(--surface2)}
+.tc-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--muted);line-height:1.6}
+.clausula{background:linear-gradient(135deg,rgba(255,92,92,.08),rgba(255,92,92,.04));border:2px solid rgba(255,92,92,.3);border-radius:16px;padding:24px;margin-bottom:20px;text-align:center}
+.clausula .ct{font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:1px;color:var(--danger);margin-bottom:12px}
+.clausula p{font-size:13px;color:var(--muted);line-height:1.8}
+footer{padding:32px 48px;text-align:center;font-size:13px;color:var(--muted);border-top:1px solid var(--border)}
+@media(max-width:768px){nav,.hero{padding-left:20px;padding-right:20px}.layout{grid-template-columns:1fr;padding:0 20px 60px}.index-sidebar{display:none}}
+</style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="index.html">Asesores<span>Ya</span></a>
+  <a class="back" href="index.html">← Volver</a>
+</nav>
+<div class="hero">
+  <h1>TÉRMINOS Y<br><span class="y">CONDICIONES</span></h1>
+  <p>Al registrarte y usar AsesoresYa aceptás la totalidad de estos términos. Son vinculantes y sin letra chica.</p>
+  <div class="last-update">📅 Última actualización: mayo 2025 · Mendoza, Argentina · v2.0</div>
+</div>
+<div class="layout">
+<aside class="index-sidebar">
+  <div class="index-title">Índice</div>
+  <a class="index-link active" href="#s1">1. Naturaleza del servicio</a>
+  <a class="index-link" href="#s2">2. Exención de responsabilidad</a>
+  <a class="index-link" href="#s3">3. Registro y edad</a>
+  <a class="index-link" href="#s4">4. Prohibición contacto externo</a>
+  <a class="index-link" href="#s5">5. Grabación obligatoria Zoom</a>
+  <a class="index-link" href="#s6">6. Custodia de fondos 70/30</a>
+  <a class="index-link" href="#s7">7. Ausencias y penalizaciones</a>
+  <a class="index-link" href="#s8">8. Fallos técnicos</a>
+  <a class="index-link" href="#s9">9. Tarifas y contraoferta</a>
+  <a class="index-link" href="#s10">10. Disciplina y baneo</a>
+  <a class="index-link" href="#s11">11. Reembolsos manuales CBU</a>
+  <a class="index-link" href="#s12">12. Responsabilidad fiscal AFIP</a>
+  <a class="index-link" href="#s13">13. Contratos y recibos</a>
+  <a class="index-link" href="#s14">14. Privacidad</a>
+  <a class="index-link" href="#s15">15. Modificaciones</a>
+  <a class="index-link" href="#s16">16. Contacto y jurisdicción</a>
+</aside>
+<div class="tc-content">
+
+<div class="tc-section" id="s1">
+<div class="tc-num">// 01</div>
+<div class="tc-title">NATURALEZA DEL SERVICIO</div>
+<div class="tc-body">
+<p>AsesoresYa opera única y exclusivamente como un <strong>nexo tecnológico intermedio de tipo marketplace</strong>. Su único propósito es permitir que personas que necesitan consultoría (Clientes) coordinen y contraten bloques de tiempo con profesionales independientes (Asesores). La plataforma <strong>no es una empresa de asesoramiento</strong>, no provee las asesorías por sí misma ni forma parte de la relación contractual entre el Cliente y el Asesor.</p>
+<div class="abox y"><div class="abox-t y">⚡ Importante</div><div class="abox-b">Cualquier idea, método o conocimiento volcado en la web por los usuarios es de carácter público y no generará derechos de autoría ni reclamos de exclusividad contra la administración.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s2">
+<div class="tc-num">// 02</div>
+<div class="tc-title">EXENCIÓN ABSOLUTA DE RESPONSABILIDAD</div>
+<div class="tc-body">
+<div class="clausula">
+<div class="ct">⚠️ CLÁUSULA DE INDEMNIDAD INTEGRAL</div>
+<p>AsesoresYa, sus desarrolladores, propietarios y administradores <strong style="color:var(--danger)">NO se responsabilizan bajo ninguna circunstancia</strong> por las opiniones, consejos, diagnósticos, recomendaciones financieras o legales impartidas por el Asesor. El Cliente asume de manera exclusiva y total el riesgo por la aplicación práctica de dicha información.</p>
+</div>
+<div class="abox r"><div class="abox-t r">🚨 Renuncia expresa a demandas</div><div class="abox-b">ANTE CUALQUIER INCUMPLIMIENTO, DAÑO, FRAUDE, PERJUICIO ECONÓMICO O CONFLICTO DERIVADO DE LA REUNIÓN, LAS ACCIONES LEGALES DEBERÁN DIRIGIRSE ÚNICA Y EXCLUSIVAMENTE CONTRA LA CONTRAPARTE (CLIENTE CONTRA ASESOR O ASESOR CONTRA CLIENTE). ASESORESYA QUEDA TOTALMENTE EXENTA DE TODA RESPONSABILIDAD CIVIL, PENAL O DE CONSUMO. LOS USUARIOS RENUNCIAN EXPRESAMENTE A ENTABLAR CUALQUIER RECLAMO O JUICIO CONTRA LA PLATAFORMA O SUS PROPIETARIOS.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s3">
+<div class="tc-num">// 03</div>
+<div class="tc-title">REGISTRO, VALIDACIÓN Y DECLARACIÓN DE EDAD</div>
+<div class="tc-body">
+<div class="abox y"><div class="abox-t y">📋 Datos obligatorios de registro</div><div class="abox-b">Todo usuario debe ingresar obligatoriamente: <strong style="color:var(--text)">DNI, número de WhatsApp y fecha de nacimiento</strong>. La carga tiene carácter de <strong style="color:var(--text)">declaración jurada</strong>. Ante detección de datos falsos, la cuenta será dada de baja y se podrá denunciar al infractor ante autoridades de Mendoza.</div></div>
+<div class="abox r"><div class="abox-t r">🚫 Solo mayores de 18 años</div><div class="abox-b">El uso está estrictamente limitado a personas mayores de 18 años. Si se constata que el titular es menor de edad (por DNI, fecha de nacimiento o revisión del video), la cuenta será baneada de forma inmediata e irreversible.</div></div>
+<div class="abox b"><div class="abox-t b">👨‍👩‍👧 Responsabilidad de tutores</div><div class="abox-b">Si el registro fue correcto pero durante la videollamada se presenta un menor de edad, toda la responsabilidad civil, penal y comercial recaerá exclusivamente sobre el Padre, Madre o Tutor Legal. AsesoresYa queda completamente libre de cualquier reclamo.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s4">
+<div class="tc-num">// 04</div>
+<div class="tc-title">PROHIBICIÓN DE CONTACTO EXTERNO (ANTI-EVASIÓN)</div>
+<div class="tc-body">
+<div class="abox r"><div class="abox-t r">🚫 Terminantemente prohibido</div><div class="abox-b">Queda prohibido compartir, solicitar o intercambiar: números de WhatsApp, perfiles de redes sociales, emails particulares o datos de pago ajenos a la plataforma. Esto se considera <strong style="color:var(--danger)">infracción grave de evasión de comisiones</strong> y resultará en baneo inmediato de ambas partes.</div></div>
+<p><strong>Obligatoriedad del canal:</strong> Toda propuesta, negociación, pago y comunicación debe realizarse dentro de AsesoresYa. No se reconocerá ningún acuerdo realizado fuera de la plataforma.</p>
+</div>
+</div>
+
+<div class="tc-section" id="s5">
+<div class="tc-num">// 05</div>
+<div class="tc-title">GRABACIÓN OBLIGATORIA DE SESIONES EN ZOOM</div>
+<div class="tc-body">
+<p>Todas las asesorías se realizan mediante Zoom. Es <strong>obligación mandatoria</strong> grabar la sesión de forma continua desde el minuto uno hasta el final.</p>
+<div class="abox y"><div class="abox-t y">📹 La grabación es la única prueba válida</div><div class="abox-b">El usuario que detenga, borre, altere o no entregue la grabación <strong style="color:var(--danger)">perderá todo derecho a reclamo de fondos</strong> y podrá ser demandado por la plataforma, además de ser expulsado de inmediato.</div></div>
+<div class="abox r"><div class="abox-t r">⏱️ Plazo fatal de 24 horas</div><div class="abox-b">Finalizada la sesión, el Asesor tiene <strong style="color:var(--text)">24 horas máximas e improrrogables</strong> para entregar la grabación al Administrador. Si no la entrega, pierde de forma <strong style="color:var(--danger)">automática, irreversible y definitiva</strong> el derecho a cobrar sus honorarios. Los fondos quedan retenidos por la plataforma.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s6">
+<div class="tc-num">// 06</div>
+<div class="tc-title">CUSTODIA DE FONDOS, AUDITORÍA Y COMISIONES (70/30)</div>
+<div class="tc-body">
+<div class="abox g"><div class="abox-t g">💰 Esquema de pagos — SIN cargos extra al cliente</div><div class="abox-b">El cliente paga el <strong style="color:var(--text)">honorario completo del asesor</strong>, sin ningún cargo adicional. AsesoresYa retiene el 100% como garantía. Una vez validada la grabación: <strong style="color:var(--text)">70% al asesor</strong> y <strong style="color:var(--accent)">30% se queda AsesoresYa</strong> como comisión. El alias de pago es: <strong style="color:var(--accent);letter-spacing:2px;font-family:DM Mono,monospace">asesoresya</strong></div></div>
+<table class="tc-table">
+<thead><tr><th>Concepto</th><th>Detalle</th></tr></thead>
+<tbody>
+<tr><td><strong>Lo que paga el cliente</strong></td><td>El honorario del asesor (sin cargos extras)</td></tr>
+<tr><td><strong>Retención inicial</strong></td><td>100% bajo custodia de AsesoresYa hasta validar la sesión</td></tr>
+<tr><td><strong>Ganancia del asesor</strong></td><td>70% — transferido dentro de las 48 hs de validada la grabación</td></tr>
+<tr><td><strong>Comisión AsesoresYa</strong></td><td>30% — retenido de forma definitiva por la plataforma</td></tr>
+<tr><td><strong>Alias de pago</strong></td><td style="font-family:DM Mono,monospace;color:var(--accent)">asesoresya</td></tr>
+</tbody>
+</table>
+<div class="abox y"><div class="abox-t y">🔍 Auditoría de contenido por el Administrador</div><div class="abox-b">El Administrador revisará exhaustivamente el video enviado. Si el Asesor impartió conceptos obsoletos, falsos, irrelevantes o que no guardan relación con lo contratado, <strong style="color:var(--danger)">perderá el derecho a cobrar el 70%</strong>. Dicho dinero será devuelto íntegramente al Cliente afectado.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s7">
+<div class="tc-num">// 07</div>
+<div class="tc-title">LLEGADA TARDE, AUSENCIAS Y PENALIZACIONES</div>
+<div class="tc-body">
+<table class="tc-table">
+<thead><tr><th>Situación</th><th>Consecuencia</th></tr></thead>
+<tbody>
+<tr><td><strong>Tolerancia máxima</strong></td><td>15 minutos desde la hora exacta pactada</td></tr>
+<tr><td><strong>Asesor ausente o +15 min tarde</strong></td><td style="color:var(--danger)">Cobra $0. Fondos retenidos por la plataforma. Baja de reputación + advertencia de baneo directo</td></tr>
+<tr><td><strong>Cliente ausente o +15 min tarde</strong></td><td style="color:var(--danger)">Reembolso $0. Fondos retenidos por la plataforma para proteger el lucro cesante del asesor</td></tr>
+<tr><td><strong>Cliente cancela con +24 hs de aviso</strong></td><td style="color:var(--accent2)">100% de reembolso al cliente</td></tr>
+<tr><td><strong>Cliente cancela con menos de 24 hs</strong></td><td style="color:var(--danger)">0% de reembolso (sin derecho a devolución)</td></tr>
+</tbody>
+</table>
+<div class="abox b"><div class="abox-t b">📹 Prueba de inocencia</div><div class="abox-b">La única forma de justificar un inconveniente horario es aportando la grabación de Zoom que demuestre de forma inobjetable quién fue el culpable.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s8">
+<div class="tc-num">// 08</div>
+<div class="tc-title">FALLOS TÉCNICOS Y CORTES DE CONECTIVIDAD</div>
+<div class="tc-body">
+<div class="abox y"><div class="abox-t y">⚡ Exención de la plataforma</div><div class="abox-b">Cortes de luz, caídas de internet, fallas de dispositivos o hackeos de fuerza mayor <strong style="color:var(--text)">no son responsabilidad de AsesoresYa</strong>.</div></div>
+<table class="tc-table">
+<thead><tr><th>Situación</th><th>Consecuencia</th></tr></thead>
+<tbody>
+<tr><td><strong>Se cortó la luz/internet al Asesor</strong></td><td style="color:var(--danger)">Cobra $0. Fondos quedan retenidos por la plataforma definitivamente</td></tr>
+<tr><td><strong>Se cortó la luz/internet al Cliente</strong></td><td style="color:var(--danger)">Sin reembolso (0%). El cliente pierde el 100% por negligencia propia</td></tr>
+<tr><td><strong>Falla del servidor de AsesoresYa</strong></td><td style="color:var(--accent2)">La plataforma puede ofrecer reagendamiento sin costo</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="tc-section" id="s9">
+<div class="tc-num">// 09</div>
+<div class="tc-title">TARIFAS Y DERECHO DE CONTRAOFERTA</div>
+<div class="tc-body">
+<p>La administración puede revisar y auditar cualquier tarifa propuesta por un Asesor antes de su publicación.</p>
+<div class="abox y"><div class="abox-t y">💬 Contraoferta del administrador — aceptación obligatoria</div><div class="abox-b">Si el precio es excesivo o inadecuado, el Administrador puede enviar una contraoferta. <strong style="color:var(--text)">La aceptación es obligatoria</strong> para operar en el sistema. Si el Asesor rechaza o no responde, su propuesta es dada de baja de inmediato.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s10">
+<div class="tc-num">// 10</div>
+<div class="tc-title">RÉGIMEN DE DISCIPLINA, EXPULSIÓN Y BANEO</div>
+<div class="tc-body">
+<p><strong>Solo el administrador</strong> puede suspender o dar de baja a cualquier usuario. Su decisión es final e inapelable.</p>
+<div class="abox r"><div class="abox-t r">🚨 Causales de baneo inmediato sin previo aviso</div><div class="abox-b">
+· Pasar contactos externos o evadir comisiones<br>
+· No grabar sesiones de Zoom o no entregar el video en 24 horas<br>
+· Fraude, estafa o suplantación de identidad<br>
+· Insultos, acoso o mal comportamiento en llamadas<br>
+· Dictado de contenido inútil, falso o mala praxis profesional<br>
+· Ser menor de edad o registrarse con datos falsos<br>
+· Reincidencia en cualquier infracción menor ya sancionada
+</div></div>
+<div class="abox y"><div class="abox-t y">📩 Notificación y aceptación obligatoria del baneo</div><div class="abox-b">El usuario recibirá una notificación con el motivo exacto y la queja que la originó. El sancionado se obliga a aceptar la resolución <strong style="color:var(--text)">sin derecho a réplica, reclamos ni impugnaciones</strong>. La baja extingue cualquier derecho a reclamar dinero o indemnizaciones.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s11">
+<div class="tc-num">// 11</div>
+<div class="tc-title">REEMBOLSOS MANUALES POR CBU/CVU</div>
+<div class="tc-body">
+<div class="abox g"><div class="abox-t g">💳 Proceso de reembolso — siempre manual</div><div class="abox-b">Las devoluciones autorizadas se gestionan de forma <strong style="color:var(--text)">estrictamente manual</strong> mediante transferencia bancaria (CBU/CVU/Alias). El Cliente tiene <strong style="color:var(--text)">obligación legal</strong> de declarar estos datos al iniciar un reclamo. Sin datos bancarios válidos, <strong style="color:var(--danger)">no se procesa ningún reembolso</strong>.</div></div>
+<p>Los reembolsos autorizados se acreditan dentro de las <strong>48 horas hábiles</strong> de ser aprobados por el administrador.</p>
+</div>
+</div>
+
+<div class="tc-section" id="s12">
+<div class="tc-num">// 12</div>
+<div class="tc-title">RESPONSABILIDAD FISCAL E IMPUESTOS (AFIP)</div>
+<div class="tc-body">
+<p>Cada Asesor actúa de forma independiente y es el <strong>único responsable absoluto</strong> ante la AFIP (como Monotributista o Responsable Inscripto). La plataforma no emite facturas por servicios de los asesores — solo por sus propias comisiones de intermediación.</p>
+<ul>
+<li>El Asesor debe emitir factura al Cliente si este la solicita</li>
+<li>El incumplimiento fiscal del asesor es su responsabilidad exclusiva</li>
+<li>AsesoresYa no responde ante la AFIP por las obligaciones fiscales de sus asesores</li>
+</ul>
+</div>
+</div>
+
+<div class="tc-section" id="s13">
+<div class="tc-num">// 13</div>
+<div class="tc-title">CONTRATOS Y RECIBOS DIGITALES</div>
+<div class="tc-body">
+<p>Cada sesión confirmada genera automáticamente un <strong>recibo de pago</strong> y un <strong>contrato de prestación de servicios</strong> entre cliente y asesor, con AsesoresYa como testigo intermediario.</p>
+<div class="abox b"><div class="abox-t b">📄 Valor legal</div><div class="abox-b">Los documentos son constancia de la transacción pero <strong style="color:var(--text)">no reemplazan la factura oficial</strong> que el asesor debe emitir según sus obligaciones fiscales.</div></div>
+</div>
+</div>
+
+<div class="tc-section" id="s14">
+<div class="tc-num">// 14</div>
+<div class="tc-title">PRIVACIDAD Y DATOS PERSONALES</div>
+<div class="tc-body">
+<p>AsesoresYa trata los datos conforme a la <strong>Ley 25.326 de Protección de Datos Personales de Argentina</strong>. Los datos nunca son vendidos a terceros. Las grabaciones de Zoom son confidenciales y solo accede el administrador en caso de disputa.</p>
+</div>
+</div>
+
+<div class="tc-section" id="s15">
+<div class="tc-num">// 15</div>
+<div class="tc-title">MODIFICACIONES A LOS TÉRMINOS</div>
+<div class="tc-body">
+<p>AsesoresYa puede modificar estos términos en cualquier momento, notificando con <strong>7 días de anticipación</strong> por email. El uso continuado implica aceptación de los nuevos términos.</p>
+</div>
+</div>
+
+<div class="tc-section" id="s16">
+<div class="tc-num">// 16</div>
+<div class="tc-title">CONTACTO Y JURISDICCIÓN</div>
+<div class="tc-body">
+<div class="abox g"><div class="abox-t g">📧 Contacto oficial</div><div class="abox-b">Email: <strong style="color:var(--text)">asesoresya@gmail.com</strong><br>Instagram: <strong style="color:var(--text)">@asesoresya</strong><br>TikTok: <strong style="color:var(--text)">@asesoresya</strong><br>Jurisdicción: <strong style="color:var(--text)">Provincia de Mendoza, República Argentina</strong><br>Respuesta en menos de 24 horas hábiles.</div></div>
+<div class="clausula">
+<div class="ct">ACEPTACIÓN EXPRESA Y VINCULANTE</div>
+<p>Al registrarte y usar AsesoresYa confirmás haber leído, entendido y aceptado en su totalidad estos Términos y Condiciones. Esta aceptación tiene carácter de <strong style="color:var(--danger)">declaración jurada</strong> y es vinculante desde el momento del registro.</p>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+<footer>© 2025 AsesoresYa · Mendoza, Argentina · <a href="index.html" style="color:var(--accent);text-decoration:none">Inicio</a> · <a href="faq.html" style="color:var(--muted);text-decoration:none">FAQ</a></footer>
+<script>
+const sections=document.querySelectorAll('.tc-section');
+const links=document.querySelectorAll('.index-link');
+window.addEventListener('scroll',()=>{
+  let c='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-140)c=s.id});
+  links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+c));
+});
+</script>
+</body>
+</html>

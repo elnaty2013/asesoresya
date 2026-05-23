@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AsesoresYa — En mantenimiento</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c27;--border:rgba(255,255,255,0.07);--accent:#f0c040;--accent2:#3de0a0;--danger:#ff5c5c;--text:#f0efe8;--muted:#6a6a7a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative}
+
+/* FONDO */
+.bg-text{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none;overflow:hidden}
+.bg-word{font-family:'Bebas Neue',sans-serif;font-size:18vw;color:rgba(61,224,160,.025);letter-spacing:-1vw;white-space:nowrap;animation:slideBg 20s linear infinite}
+@keyframes slideBg{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+
+/* CONTENT */
+.content{position:relative;z-index:1;text-align:center;padding:40px 24px;max-width:580px}
+
+/* LOGO */
+.logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--accent);margin-bottom:32px;display:block}
+.logo span{color:var(--text)}
+
+/* ICON ANIMADO */
+.maint-icon{font-size:72px;display:block;margin-bottom:24px;animation:spin-slow 4s linear infinite}
+@keyframes spin-slow{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(61,224,160,.1);border:1px solid rgba(61,224,160,.25);color:var(--accent2);font-family:'DM Mono',monospace;font-size:10px;padding:5px 14px;border-radius:100px;margin-bottom:20px;letter-spacing:1px}
+.badge::before{content:'●';font-size:8px;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,7vw,80px);letter-spacing:2px;line-height:.95;margin-bottom:16px}
+h1 .y{color:var(--accent)}
+h1 .g{color:var(--accent2)}
+p{font-size:16px;color:var(--muted);line-height:1.7;margin-bottom:32px;font-weight:300}
+
+/* PROGRESS */
+.progress-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:28px;text-align:left}
+.prog-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;text-align:center}
+.prog-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.prog-item:last-child{border-bottom:none}
+.prog-dot{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.prog-dot.done{background:rgba(61,224,160,.2);color:var(--accent2)}
+.prog-dot.doing{background:rgba(240,192,64,.2);color:var(--accent);animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.prog-dot.pending{background:var(--surface2);color:var(--muted)}
+.prog-label{flex:1;color:var(--text)}
+.prog-status{font-size:11px;font-family:'DM Mono',monospace}
+.prog-status.done{color:var(--accent2)}
+.prog-status.doing{color:var(--accent)}
+.prog-status.pending{color:var(--muted)}
+
+/* TIEMPO ESTIMADO */
+.eta-wrap{display:flex;gap:10px;justify-content:center;margin-bottom:28px}
+.eta-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center;min-width:70px}
+.eta-num{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--accent);line-height:1}
+.eta-lbl{font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-top:3px}
+.eta-sep{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--muted);align-self:center;padding-bottom:16px}
+
+/* NOTIF */
+.notif-box{background:var(--surface);border:1px solid rgba(61,224,160,.2);border-radius:14px;padding:20px;margin-bottom:20px;display:flex;gap:14px;align-items:center;text-align:left}
+.notif-icon{font-size:28px;flex-shrink:0}
+.notif-title{font-weight:700;font-size:14px;margin-bottom:4px}
+.notif-sub{font-size:13px;color:var(--muted);line-height:1.5}
+.notif-input-wrap{display:flex;gap:8px;margin-top:10px}
+.notif-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s}
+.notif-input:focus{border-color:var(--accent2)}
+.notif-btn{background:var(--accent2);color:#0a0a0f;font-weight:700;font-size:13px;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;transition:all .2s}
+.notif-btn:hover{box-shadow:0 6px 18px rgba(61,224,160,.3)}
+
+/* SOCIAL */
+.social-wrap{display:flex;gap:12px;justify-content:center;margin-top:8px}
+.social-link{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;text-decoration:none;border:1px solid var(--border);padding:8px 16px;border-radius:100px;transition:all .2s}
+.social-link:hover{border-color:var(--accent);color:var(--accent)}
+
+/* STATUS */
+.status-msg{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="bg-text">
+  <div class="bg-word">MANTENIMIENTO · VOLVEMOS YA · MANTENIMIENTO · VOLVEMOS YA · </div>
+</div>
+
+<div class="content">
+  <a class="logo" href="#">Asesores<span>Ya</span></a>
+
+  <div class="badge">Mantenimiento programado en curso</div>
+
+  <span class="maint-icon">⚙️</span>
+
+  <h1>ESTAMOS<br><span class="g">MEJORANDO</span><br>TODO.</h1>
+  <p>La plataforma está temporalmente fuera de línea para aplicar mejoras importantes. Volvemos muy pronto y con novedades.</p>
+
+  <!-- PROGRESO -->
+  <div class="progress-wrap">
+    <div class="prog-title">¿Qué estamos haciendo?</div>
+    <div class="prog-item">
+      <div class="prog-dot done">✓</div>
+      <span class="prog-label">Respaldo de base de datos</span>
+      <span class="prog-status done">Listo</span>
+    </div>
+    <div class="prog-item">
+      <div class="prog-dot done">✓</div>
+      <span class="prog-label">Actualización del servidor</span>
+      <span class="prog-status done">Listo</span>
+    </div>
+    <div class="prog-item">
+      <div class="prog-dot doing">↻</div>
+      <span class="prog-label">Integración Mercado Pago</span>
+      <span class="prog-status doing">En curso...</span>
+    </div>
+    <div class="prog-item">
+      <div class="prog-dot pending">○</div>
+      <span class="prog-label">Pruebas finales del sistema</span>
+      <span class="prog-status pending">Pendiente</span>
+    </div>
+    <div class="prog-item">
+      <div class="prog-dot pending">○</div>
+      <span class="prog-label">Reapertura de la plataforma</span>
+      <span class="prog-status pending">Pendiente</span>
+    </div>
+  </div>
+
+  <!-- CUENTA REGRESIVA -->
+  <div class="eta-wrap">
+    <div class="eta-block"><div class="eta-num" id="etaH">02</div><div class="eta-lbl">HORAS</div></div>
+    <div class="eta-sep">:</div>
+    <div class="eta-block"><div class="eta-num" id="etaM">30</div><div class="eta-lbl">MIN</div></div>
+    <div class="eta-sep">:</div>
+    <div class="eta-block"><div class="eta-num" id="etaS">00</div><div class="eta-lbl">SEG</div></div>
+  </div>
+
+  <!-- NOTIFICACIÓN -->
+  <div class="notif-box">
+    <div class="notif-icon">📧</div>
+    <div>
+      <div class="notif-title">¿Querés que te avisemos cuando volvemos?</div>
+      <div class="notif-sub">Te mandamos un email en cuanto la plataforma esté disponible.</div>
+      <div class="notif-input-wrap">
+        <input class="notif-input" type="email" placeholder="tu@email.com" id="notifEmail">
+        <button class="notif-btn" onclick="suscribirNotif()">Avisame →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOCIAL -->
+  <div class="social-wrap">
+    <a class="social-link" href="https://instagram.com/asesoresya" target="_blank">📸 Instagram</a>
+    <a class="social-link" href="https://tiktok.com/@asesoresya" target="_blank">🎵 TikTok</a>
+  </div>
+
+  <div class="status-msg">Si tenés una sesión programada hoy escribinos a asesoresya@gmail.com</div>
+</div>
+
+<script>
+// CUENTA REGRESIVA
+let totalSecs = 2 * 3600 + 30 * 60;
+function updateEta(){
+  const h = Math.floor(totalSecs / 3600);
+  const m = Math.floor((totalSecs % 3600) / 60);
+  const s = totalSecs % 60;
+  document.getElementById('etaH').textContent = String(h).padStart(2,'0');
+  document.getElementById('etaM').textContent = String(m).padStart(2,'0');
+  document.getElementById('etaS').textContent = String(s).padStart(2,'0');
+  if(totalSecs > 0) totalSecs--;
+}
+setInterval(updateEta, 1000);
+updateEta();
+
+// NOTIFICACIÓN
+function suscribirNotif(){
+  const email = document.getElementById('notifEmail').value.trim();
+  if(!email || !email.includes('@')){
+    alert('Ingresá un email válido.');
+    return;
+  }
+  document.getElementById('notifEmail').value = '';
+  document.querySelector('.notif-box').innerHTML = `
+    <div style="font-size:36px">✅</div>
+    <div>
+      <div style="font-weight:700;font-size:14px;margin-bottom:4px;color:var(--accent2)">¡Listo! Te avisamos cuando volvemos</div>
+      <div style="font-size:13px;color:var(--muted)">Revisá tu casilla de Gmail: ${email}</div>
+    </div>`;
+}
+</script>
+</body>
+</html>
