@@ -2,7 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const { v4: uuid } = require('uuid');
 const pool = require('../db/pool');
-const { authAdmin, authAsesor } = require('../middleware/auth');
+const { authAdmin, authAsesor, authCliente } = require('../middleware/auth');
 const emails = require('../emails/templates');
 
 // ════════════════════════════════════
@@ -26,6 +26,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+// ── PUT /asesores/mi-perfil — ANTES de /:id para evitar conflicto ──
+router.put('/mi-perfil', authAsesor, async (req, res) => {
+  const { bio, zoom_link, zoom_id, direccion, dias_disponibles, hora_desde, hora_hasta } = req.body;
+  try {
+    const { rows } = await pool.query(`
+      UPDATE asesores SET bio=$1,zoom_link=$2,zoom_id=$3,direccion=$4,dias_disponibles=$5,hora_desde=$6,hora_hasta=$7
+      WHERE id=$8 RETURNING id,nombre,email,rol,especialidad,precio,bio,zoom_link,zoom_id,direccion,dias_disponibles,hora_desde,hora_hasta
+    `, [bio,zoom_link,zoom_id,direccion,dias_disponibles,hora_desde,hora_hasta,req.user.id]);
+    res.json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al actualizar perfil' });
+  }
+});
+
 // ── GET /asesores/:id — Perfil público de un asesor ──
 router.get('/:id', async (req, res) => {
   try {
@@ -42,20 +56,6 @@ router.get('/:id', async (req, res) => {
     res.json({ asesor: asesorQ.rows[0], resenas: resenasQ.rows });
   } catch (err) {
     res.status(500).json({ error: 'Error' });
-  }
-});
-
-// ── PUT /asesores/mi-perfil — Asesor actualiza su perfil ──
-router.put('/mi-perfil', authAsesor, async (req, res) => {
-  const { bio, zoom_link, zoom_id, direccion, dias_disponibles, hora_desde, hora_hasta } = req.body;
-  try {
-    const { rows } = await pool.query(`
-      UPDATE asesores SET bio=$1,zoom_link=$2,zoom_id=$3,direccion=$4,dias_disponibles=$5,hora_desde=$6,hora_hasta=$7
-      WHERE id=$8 RETURNING id,nombre,email,rol,especialidad,precio,bio,zoom_link,zoom_id,direccion,dias_disponibles,hora_desde,hora_hasta
-    `, [bio,zoom_link,zoom_id,direccion,dias_disponibles,hora_desde,hora_hasta,req.user.id]);
-    res.json(rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: 'Error al actualizar perfil' });
   }
 });
 
